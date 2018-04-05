@@ -5,12 +5,12 @@
 
 ## Goals
 
-* Provide Starbucks customers with convient way to place Starbucks drink orders online before arriving at a Starbucks location to increase overall customer satisfaction.
+* Provide Starbucks customers with convenient way to place Starbucks drink orders online before arriving at a Starbucks location to increase overall customer satisfaction.
 * Allow Starbucks employees on location to access orders placed by customers online ahead of time so that a customer's drink order will be prepared and ready for pickup up before customer arrives in store.
 
 ## Non-Goals
 
-* Online ordering is not indended to replace in store Starbucks experience via delivery or other means. Online ordering is intended to enhance the customer experience by reducing overall customer wait time when making a purchase from a Starbucks location.
+* Online ordering is not intended to replace in store Starbucks experience via delivery or other means. Online ordering is intended to enhance the customer experience by reducing overall customer wait time when making a purchase from a Starbucks location.
 
 ## Overview
 
