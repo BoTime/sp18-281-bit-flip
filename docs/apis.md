@@ -25,4 +25,5 @@
 | /orders     | POST   | Place an order | {} |
 | /order/:id  | GET   | Get order status | {} |
 | /order/:id  | DELETE | Place an order | {} |
+| /order/:id  | PUT | Modify an order | {} |
 | /process/order/:id  | POST | Process an order | {} |
