@@ -1,4 +1,12 @@
 `Add new content at the top`
+1. How do we do sharding?
+2. Load balancer Design:
+  - Application level (http)
+  - Connection level (tcp/ip)
+3. How to present or visualize the results of:
+  - load balancing at different level
+  - response to network partition
+4. How to integrate personal project
 
 ---
 
