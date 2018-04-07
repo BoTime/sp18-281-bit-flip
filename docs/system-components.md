@@ -24,3 +24,22 @@ The Starbucks Employee UI provides an employee at a Starbucks location access to
 ## Order Backend
 
 The Order Backend provides an API which allows Starbucks customers to place orders and Starbucks employees to view and process online orders placed by customers.
+Below three functional modularization enable functional splitting.
+
+### SIGN-IN/UP/OUT
+
+The Three user authentication functionalities can be modularized using ../SIGN/ route for identification of the incoming request. The functionalities will include some mechanism to identify logged-in/out users on distributed servers.
+
+### Order Placement
+
+The Signed-In users will be able to post orders(POST),get orders(GET),modify order(PUT) and delete order(DELETE). The functionalities related to order placemets can be modularized using ../ORDER/ route for identification of the incoming requests.
+
+### Order Processing
+
+A user on sucessfull payement, will be able to place orders. The processing of orders will be done in the module routed by ../ORDERS.
+TBD (auto or using EMPLOYEE role)
+
+## Load Balancing
+
+Each backend module is replicated and load balanced by a load balancer to evenly distribute load. Each load balancer is access points for Frontends.
+
