@@ -57,7 +57,7 @@ var valid_user="xxxx";
 
 // Use the bodyParser() middleware for all routes.
 app.use(express.static("public"));
-app.use(bodyParser.json());
+app.use(bodyParser());
 app.use(cookieParser());
 
 app.use('/', index);

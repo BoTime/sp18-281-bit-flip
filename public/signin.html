@@ -28,7 +28,7 @@
 	
 	
 	<link rel="stylesheet" href="css/menu.css">
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+	<!--script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script-->
 	<script>
 		function check_pass() {
 			if (document.getElementById('password1').value == document.getElementById('password2').value) {
@@ -55,7 +55,7 @@
 				<div class="wrap-col">
 					<div class="contact">
 							<div>
-								<form name="form" id="ff" method="post" action="/sign-in"  enctype="text/html">
+								<form name="form" class="ff" method="post" action="/sign-in"  enctype="text/html">
 									<label class="row">
 										<div style="width:20%;top:1%;right:5%;position:absolute">
 											<center><h2 style="color:white;">Existing User<h2></center>
@@ -80,7 +80,7 @@
 								</form>
 							</div>
 							<div>
-								<form name="form" id="ff" method="post" action="/sign-up"  enctype="text/html">
+								<form name="form" class="ff" method="post" action="/sign-up"  enctype="text/html">
 									<label class="row">
 										<div style="width:20%;top:1%;left:5%;position:absolute">
 											<center><h2 style="color:white;">New User<h2></center>
@@ -98,7 +98,7 @@
 										</div>
 										<div style="width:20%;position:absolute;top:25%;left:5%">
 											<div class="wrap-col">
-												<input type="password" name="password2"  id="password2" placeholder="Confirm passsword" required="required" onchange='check_pass()' />
+												<input type="password" name="password2"  id="password2" placeholder="Confirm passsword" required="required" onchange='check_pass(); return false;' />
 											</div>
 										</div>
 										<div style="width:20%;top:35%;left:5%;position:absolute">
