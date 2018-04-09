@@ -5,7 +5,7 @@ var router = express.Router();
 router.post('/',
 	function(req, res)
 	{	
-		console.log("SignIn User data:", req);
+		console.log("SignIn User data:", req.body.email,req.body.password);
 		res.redirect('/index.html');
 	}
 );
