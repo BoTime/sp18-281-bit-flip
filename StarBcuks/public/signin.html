@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<!-- https://www.html5xcss3.com/2016/07/cafehome-free-html5-template.html-->
+<head>
+
+    <!-- Basic Page Needs
+  ================================================== -->
+	<meta charset="utf-8">
+	<title>StarBcuks</title>
+	<meta name="description" content="Free Responsive Html5 Css3 Templates | html5xcss3.com">
+	<meta name="author" content="www.html5xcss3.com">
+	
+    <!-- Mobile Specific Metas
+	================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <!-- CSS
+	================================================== -->
+  	<link rel="stylesheet" href="css/zerogrid.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/lightbox.css">
+	
+	<!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	
+	<link rel="stylesheet" href="css/menu.css">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+	<script>
+		function check_pass() {
+			if (document.getElementById('password1').value == document.getElementById('password2').value) {
+				document.getElementById('password2').style.color="black";
+				document.getElementById('submit1').disabled = false;
+			} else {
+				document.getElementById('password2').style.color="red";
+				document.getElementById('submit1').disabled = true;
+			}
+		}
+	</script>
+	
+</head>
+
+<body class="home-page">
+	<div class="wrap-body">
+		<div class="header">
+			<div id='cssmenu' >
+				<ul>
+				   <li class="active"><a href='index.html'><span>StarBcuks</span></a></li>
+				</ul>
+			</div>
+			<div class="custom-banner" style="background-color:black">
+				<div class="wrap-col">
+					<div class="contact">
+							<div>
+								<form name="form" id="ff" method="post" action="/sign-in"  enctype="text/html">
+									<label class="row">
+										<div style="width:20%;top:1%;right:5%;position:absolute">
+											<center><h2 style="color:white;">Existing User<h2></center>
+										</div>
+										<div style="width:20%;top:5%;right:5%;position:absolute">
+											<div class="wrap-col">
+												<input type="email" name="email" id="email" placeholder="Enter email" required="required" />
+											</div>
+										</div>
+										</br>
+										<div style="width:20%;position:absolute;top:15%;right:5%">
+											<div class="wrap-col">
+												<input type="password" name="password" id="password" placeholder="Enter passsword" required="required" />
+											</div>
+										</div>
+										<div style="width:20%;position:absolute;top:25%;right:5%">
+											<div class="wrap-col">
+												<center><input class="sendButton" type="submit" name="submit" value="Login"></center>
+											</div>
+										</div>
+									</label>
+								</form>
+							</div>
+							<div>
+								<form name="form" id="ff" method="post" action="/sign-up"  enctype="text/html">
+									<label class="row">
+										<div style="width:20%;top:1%;left:5%;position:absolute">
+											<center><h2 style="color:white;">New User<h2></center>
+										</div>
+										<div style="width:20%;top:5%;left:5%;position:absolute">
+											<div class="wrap-col">
+												<input type="email" name="email" id="email2" placeholder="Enter email" required="required" />
+											</div>
+										</div>
+										</br>
+										<div style="width:20%;position:absolute;top:15%;left:5%">
+											<div class="wrap-col">
+												<input type="password" name="password1" id="password1" placeholder="Enter passsword" required="required" />
+											</div>
+										</div>
+										<div style="width:20%;position:absolute;top:25%;left:5%">
+											<div class="wrap-col">
+												<input type="password" name="password2"  id="password2" placeholder="Confirm passsword" required="required" onchange='check_pass()' />
+											</div>
+										</div>
+										<div style="width:20%;top:35%;left:5%;position:absolute">
+											<div class="wrap-col">
+												<input type="name" name="name" id="name" placeholder="Enter a name" required="required" />
+											</div>
+										</div>
+										<div style="width:20%;position:absolute;top:45%;left:5%">
+											<div class="wrap-col">
+												<center><input id ="submit1" class="sendButton" type="submit" name="submit" value="Signup"/></center>
+											</div>
+										</div>
+										
+									</label>
+								</form>
+								
+							</div>
+							
+							<img src="images/main.jpg">
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--////////////////////////////////////Container-->
+		
+		<!--////////////////////////////////////Footer-->
+		<footer>
+			<div class="copyright">
+				<div class="zerogrid wrapper">
+					Copyright @ CAFEHOME - Designed by <a href="https://www.html5xcss3.com">HTML5xCSS3</a>
+					<ul class="quick-link">
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Terms of Use</a></li>
+					</ul>
+				</div>
+			</div>
+		</footer>
+	</div>
+</body>
+</html>
