@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"github.com/gocql/gocql"
 	"github.com/gorilla/mux"
+	"github.com/scylladb/gocqlx"
+	"github.com/scylladb/gocqlx/qb"
 	"log"
 	"net/http"
 	"os"
@@ -95,36 +97,6 @@ func main() {
 	os.Exit(0)
 }
 
-// Authenticate the User, add 'user_id' to request context
-func (srv *Server) AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("Authentication")
-
-		user_id, found := getUser(token)
-		if !found && srv.debug {
-			// Allow passing of User ID directly if in debug mode
-			user_id = r.Header.Get("X-User-ID")
-		}
-
-		if user_id != "" {
-			// If User ID was found, continue as Authenticated User
-			log.Printf("Authenticated User [%s]", user_id)
-			user_context := context.WithValue(r.Context(), "user_id", user_id)
-			next.ServeHTTP(w, r.WithContext(user_context))
-		} else {
-			// Else throw error for Unauthenticated User
-			http.Error(w, "Forbidden", http.StatusForbidden)
-		}
-	})
-}
-
-// Retrieve User ID from Authentication Token
-func getUser(token string) (string, bool) {
-	// TODO(bbamsch): Implement Token->UserID Logic
-	// return "a77be83b-f9c1-4087-a81b-511f3ad2c9cb", true
-	return "", false
-}
-
 // Takes a string of comma separated database hosts and
 // returns them as an array of database hosts
 func parseDatabaseHosts(hosts string) []string {
@@ -140,63 +112,84 @@ type Server struct {
 	cassandra *gocql.Session
 }
 
-type PaymentDetails struct {
-	PaymentId gocql.UUID `json:"payment_id"`
-	Timestamp time.Time  `json:"timestamp"`
-	Amount    float64    `json:"amount"`
-}
+// Returns pagination details of the Request's query string
+func GetPagination(r *http.Request) (uint, string) {
+	var limit uint
+	var pageToken string
 
-type ListPaymentsResult struct {
-	Payments      []*PaymentDetails `json:"payments"`
-	NextPageToken *gocql.UUID       `json:"next_page_token"`
+	vars := r.URL.Query()
+	limit64, err := strconv.ParseUint(vars.Get("limit"), 10, 32)
+	if err == nil {
+		limit = uint(limit64)
+	} else {
+		limit = 10
+	}
+	pageToken = vars.Get("pageToken")
+
+	return limit, pageToken
 }
 
 func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 	// Parse Query Parameters
-	var limit uint64
-	var pageToken string
-	{
-		vars := r.URL.Query()
-		if query_limit, err := strconv.ParseUint(vars.Get("limit"), 10, 64); err == nil {
-			limit = query_limit
-		} else {
-			limit = 10 // Default Limit
-		}
-		pageToken = vars.Get("pageToken")
+	limit, pageToken := GetPagination(r)
+
+	// Set up Query
+	querySelectors := qb.M{
+		"user_id": nil,
+		"payment_id": nil,
+	}
+	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
+		querySelectors["user_id"] = userId
+	} else {
+		OutputHelper{w}.WriteErrorMessage(http.StatusUnauthorized, "Unable to Authenticate")
+		return
+	}
+	if paymentId, err := gocql.ParseUUID(pageToken); err == nil {
+		querySelectors["payment_id"] = paymentId
 	}
 
 	// Run Query against DB
-	user_id := r.Context().Value("user_id")
-	query := "SELECT payment_id, amount FROM payments WHERE user_id = ? AND payment_id > ? LIMIT ?"
-	payment_iter := srv.cassandra.Query(query).Bind(user_id, pageToken, limit).PageSize(10).Iter()
+	query, names := qb.Select("payments").
+		Where(qb.Eq("user_id"), qb.Gt("payment_id")).
+		Limit(limit).
+		ToCql()
+	log.Println(query)
+	q := gocqlx.Query(srv.cassandra.Query(query), names).BindMap(querySelectors)
 
-	// Extract Payment Details from Query Iterator
-	var payments = make([]*PaymentDetails, 0)
-	var paymentId *gocql.UUID = nil
-	var amount *float64 = nil
-	for payment_iter.Scan(paymentId, amount) {
-		payments = append(payments, &PaymentDetails{
-			PaymentId: *paymentId,
-			Timestamp: paymentId.Time(),
-			Amount:    *amount,
-		})
+	var payments []PaymentDetails
+	if err := gocqlx.Iter(q.Query).Unsafe().Select(&payments); err != nil {
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
+		return
 	}
 
 	// Build Response Structure
+	var nextPageToken *gocql.UUID
+	if len(payments) > 0 {
+		nextPageToken = &payments[len(payments)-1].PaymentId
+	}
 	result := &ListPaymentsResult{
 		Payments:      payments,
-		NextPageToken: paymentId,
+		NextPageToken: nextPageToken,
 	}
 
 	// Transform Output to JSON
 	if output, err := json.Marshal(result); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "Internal Server Error")
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
 		return
 	} else {
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write(output)
 	}
+}
 
+type OutputHelper struct {
+	w http.ResponseWriter
+}
+
+func (out OutputHelper) WriteErrorMessage(status int, message string) {
+	out.w.WriteHeader(status)
+	fmt.Fprintf(out.w, message)
 }
