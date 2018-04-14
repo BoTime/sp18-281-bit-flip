@@ -1,0 +1,5 @@
+The are 4 databases (3+1 sharded) that support the application:
+1. Users
+2. Orders
+3. Inventory 1 (U.S. West)
+4. Inventory 2 (U.S. East)
