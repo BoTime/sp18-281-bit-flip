@@ -64,6 +64,7 @@ func main() {
 	router := mux.NewRouter()
 	router.Use(server.AuthMiddleware)
 	router.HandleFunc("/payments", server.ListPayments)
+	router.HandleFunc("/payments/{payment_id}", server.GetPayment)
 
 	srv := &http.Server{
 		Addr:         "0.0.0.0:8080",
@@ -148,14 +149,14 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 		querySelectors["payment_id"] = paymentId
 	}
 
-	// Run Query against DB
+	// Set up Query
 	query, names := qb.Select("payments").
 		Where(qb.Eq("user_id"), qb.Gt("payment_id")).
 		Limit(limit).
 		ToCql()
-	log.Println(query)
 	q := gocqlx.Query(srv.cassandra.Query(query), names).BindMap(querySelectors)
 
+	// Execute Query
 	var payments []PaymentDetails
 	if err := gocqlx.Iter(q.Query).Unsafe().Select(&payments); err != nil {
 		log.Fatal(err)
@@ -183,6 +184,53 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write(output)
 	}
+}
+
+func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	// Set up Query
+	querySelectors := qb.M{
+		"user_id": nil,
+		"payment_id": nil,
+	}
+	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
+		querySelectors["user_id"] = userId
+	} else {
+		OutputHelper{w}.WriteErrorMessage(http.StatusUnauthorized, "Unable to Authenticate")
+		return
+	}
+	if paymentId, err := gocql.ParseUUID(vars["payment_id"]); err == nil {
+		querySelectors["payment_id"] = paymentId
+	} else {
+		OutputHelper{w}.WriteErrorMessage(http.StatusBadRequest, "Payment ID not provided")
+	}
+
+	// Set up Query
+	query, names := qb.Select("payments").
+		Where(qb.Eq("user_id"), qb.Eq("payment_id")).
+		ToCql()
+	q := gocqlx.Query(srv.cassandra.Query(query), names).BindMap(querySelectors)
+
+	// Execute Query
+	var payment PaymentDetails
+	if err := gocqlx.Iter(q.Query).Unsafe().Get(&payment); err != nil {
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	// Transform Output to JSON
+	if output, err := json.Marshal(payment); err != nil {
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
+		return
+	} else {
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(output)
+	}
+
 }
 
 type OutputHelper struct {
