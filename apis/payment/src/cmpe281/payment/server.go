@@ -63,7 +63,16 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Use(server.AuthMiddleware)
-	router.HandleFunc("/payments", server.ListPayments)
+	router.HandleFunc("/payments", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			server.ListPayments(w, r)
+		case "POST":
+			server.CreatePayment(w, r)
+		default:
+			OutputHelper{w}.WriteErrorMessage(http.StatusNotFound, "Method Not Supported")
+		}
+	})
 	router.HandleFunc("/payments/{payment_id}", server.GetPayment)
 
 	srv := &http.Server{
@@ -136,7 +145,7 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 
 	// Set up Query
 	querySelectors := qb.M{
-		"user_id": nil,
+		"user_id":    nil,
 		"payment_id": nil,
 	}
 	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
@@ -186,12 +195,51 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (srv *Server) CreatePayment(w http.ResponseWriter, r *http.Request) {
+	var payment *PaymentDetails
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&payment); err != nil {
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusBadRequest, "Bad Request")
+	}
+
+	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
+		payment.UserId = userId
+	} else {
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusUnauthorized, "Unable to Authenticate")
+		return
+	}
+	payment.PaymentId = gocql.TimeUUID()
+	payment.Status = "Processed" // Fake Payment Processing -- Always Succeed :)
+
+	query, names := qb.Insert("payments").Columns("card_details", "billing_details", "user_id", "payment_id", "status", "amount").ToCql()
+	q := gocqlx.Query(srv.cassandra.Query(query), names).BindStruct(payment)
+
+	if err := q.ExecRelease(); err != nil {
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Failed to create Payment")
+		return
+	}
+
+	// Transform Output to JSON
+	if output, err := json.Marshal(payment); err != nil {
+		log.Fatal(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
+		return
+	} else {
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(output)
+	}
+}
+
 func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	// Set up Query
 	querySelectors := qb.M{
-		"user_id": nil,
+		"user_id":    nil,
 		"payment_id": nil,
 	}
 	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
@@ -230,7 +278,6 @@ func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write(output)
 	}
-
 }
 
 type OutputHelper struct {

@@ -28,6 +28,7 @@ CREATE TABLE starbucks.payments (
     billing_details frozen<billing_details>,
     card_details frozen<card_details>,
     amount double,
+    status text,
     PRIMARY KEY (user_id, payment_id)
 ) WITH CLUSTERING ORDER BY (payment_id ASC)
     AND bloom_filter_fp_chance = 0.01

@@ -6,7 +6,7 @@ import (
 
 // PaymentDetails model
 type PaymentDetails struct {
-	userId    gocql.UUID
+	UserId    gocql.UUID `db:"user_id" json:"-"`
 	PaymentId gocql.UUID `json:"payment_id"`
 	Amount    float64    `json:"amount"`
 	Status    string     `json:"status"`
