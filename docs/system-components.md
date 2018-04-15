@@ -7,39 +7,29 @@ The Web Frontend serves the user interface which present services available to t
 Roles include:
 * Anonymous User
 * Starbucks Customer
-* Starbucks Employee
 
 ### Anonymous User UI
 
-The Starbucks Anonymous User UI presents Company Branding and encourages the customer to register for an account with which they can begin making online Starbucks drink orders and save their favorite drinks for future online orders.
+The Starbucks Anonymous User UI presents Company Branding and encourages the customer to register for an account with which they can begin making online Starbucks orders.
 
 ### Customer UI
 
-The Starbucks Customer UI supplements the interface present to an Anonymous User to expose additional customer-centric services such as placing an online Starbucks drink order and saving the customer's drink order for future orders.
+The Starbucks Customer UI supplements the interface present to an Anonymous User to expose additional customer-centric services such as placing an online Starbucks drink order and viewing the past order history.
 
-### Employee UI
+## App Backend Modules
 
-The Starbucks Employee UI provides an employee at a Starbucks location access to view and fulfill online Starbucks drink orders.
+###  User - Sing In/Up/Out
+The user authentication functionalities can be combined as a module to distiguish between signed-in/out user . The functionalities will include some mechanism to identify logged-in/out users on distributed servers and corrsponding APIs.
 
-## Order Backend
+### Order 
 
-The Order Backend provides an API which allows Starbucks customers to place orders and Starbucks employees to view and process online orders placed by customers.
-Below three functional modularization enable functional splitting.
+The Order placement and processing functionalities can be combined in a module. The module is responsible for authenticating requests via User module and processing orders based on inventory and payment details.
 
-### SIGN-IN/UP/OUT
+### Inventory
 
-The Three user authentication functionalities can be modularized using ../SIGN/ route for identification of the incoming request. The functionalities will include some mechanism to identify logged-in/out users on distributed servers.
+Inventory of amount of products available in the two stores are managed by the module. It aids in order processing based on its inventory checks. It maintains two databases of each store.
 
-### Order Placement
+### Payment
 
-The Signed-In users will be able to post orders(POST),get orders(GET),modify order(PUT) and delete order(DELETE). The functionalities related to order placemets can be modularized using ../ORDER/ route for identification of the incoming requests.
-
-### Order Processing
-
-A user on sucessfull payement, will be able to place orders. The processing of orders will be done in the module routed by ../ORDERS.
-TBD (auto or using EMPLOYEE role)
-
-## Load Balancing
-
-Each backend module is replicated and load balanced by a load balancer to evenly distribute load. Each load balancer is access points for Frontends.
+Allow payment processing of orders placed in a module. It provides validation/invalidation of payment details provided during order processing. 
 

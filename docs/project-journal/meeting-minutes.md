@@ -54,7 +54,8 @@
 3. Discuss and assign work to team members:
 - Bo : User module 
 - Vimmi : Order module 
-- Masi and Brian : Kong setup and Inventory module  
+- Masi and Brian : Kong setup and Inventory module
+- Brian : Payment module  
 
 ## Action Items
 | Items | Person Responsible  | Deadline |
