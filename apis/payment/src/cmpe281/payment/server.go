@@ -52,7 +52,6 @@ func main() {
 	session, err := cluster.CreateSession()
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 	fmt.Printf("Done")
 
@@ -168,7 +167,7 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 	// Execute Query
 	var payments []PaymentDetails
 	if err := gocqlx.Iter(q.Query).Unsafe().Select(&payments); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
@@ -185,7 +184,7 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 
 	// Transform Output to JSON
 	if output, err := json.Marshal(result); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
 		return
 	} else {
@@ -199,14 +198,15 @@ func (srv *Server) CreatePayment(w http.ResponseWriter, r *http.Request) {
 	var payment *PaymentDetails
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&payment); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusBadRequest, "Bad Request")
+		return
 	}
 
 	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
 		payment.UserId = userId
 	} else {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusUnauthorized, "Unable to Authenticate")
 		return
 	}
@@ -217,14 +217,14 @@ func (srv *Server) CreatePayment(w http.ResponseWriter, r *http.Request) {
 	q := gocqlx.Query(srv.cassandra.Query(query), names).BindStruct(payment)
 
 	if err := q.ExecRelease(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Failed to create Payment")
 		return
 	}
 
 	// Transform Output to JSON
 	if output, err := json.Marshal(payment); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
 		return
 	} else {
@@ -252,6 +252,7 @@ func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 		querySelectors["payment_id"] = paymentId
 	} else {
 		OutputHelper{w}.WriteErrorMessage(http.StatusBadRequest, "Payment ID not provided")
+		return
 	}
 
 	// Set up Query
@@ -263,14 +264,20 @@ func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 	// Execute Query
 	var payment PaymentDetails
 	if err := gocqlx.Iter(q.Query).Unsafe().Get(&payment); err != nil {
-		log.Fatal(err)
-		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
-		return
+		switch err {
+		case gocql.ErrNotFound:
+			OutputHelper{w}.WriteErrorMessage(http.StatusNotFound, "Payment not found")
+			return
+		default:
+			log.Println(err)
+			OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
 	}
 
 	// Transform Output to JSON
 	if output, err := json.Marshal(payment); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
 		return
 	} else {
