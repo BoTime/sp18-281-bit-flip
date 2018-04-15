@@ -142,7 +142,7 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 	// Parse Query Parameters
 	limit, pageToken := GetPagination(r)
 
-	// Set up Query
+	// Parse Query Inputs
 	querySelectors := qb.M{
 		"user_id":    nil,
 		"payment_id": nil,
@@ -172,26 +172,17 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Build Response Structure
+	// Build Next Page Token
 	var nextPageToken *gocql.UUID
 	if len(payments) > 0 {
 		nextPageToken = &payments[len(payments)-1].PaymentId
 	}
-	result := &ListPaymentsResult{
-		Payments:      payments,
-		NextPageToken: nextPageToken,
-	}
 
 	// Transform Output to JSON
-	if output, err := json.Marshal(result); err != nil {
-		log.Println(err)
-		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
-		return
-	} else {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(output)
-	}
+	OutputHelper{w}.WriteJson(&ListPaymentsResult{
+		Payments:      payments,
+		NextPageToken: nextPageToken,
+	})
 }
 
 func (srv *Server) CreatePayment(w http.ResponseWriter, r *http.Request) {
@@ -223,21 +214,14 @@ func (srv *Server) CreatePayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Transform Output to JSON
-	if output, err := json.Marshal(payment); err != nil {
-		log.Println(err)
-		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
-		return
-	} else {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(output)
-	}
+	OutputHelper{w}.WriteJson(payment)
+	return
 }
 
 func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	// Set up Query
+	// Parse Query Inputs
 	querySelectors := qb.M{
 		"user_id":    nil,
 		"payment_id": nil,
@@ -276,22 +260,6 @@ func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Transform Output to JSON
-	if output, err := json.Marshal(payment); err != nil {
-		log.Println(err)
-		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
-		return
-	} else {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(output)
-	}
-}
-
-type OutputHelper struct {
-	w http.ResponseWriter
-}
-
-func (out OutputHelper) WriteErrorMessage(status int, message string) {
-	out.w.WriteHeader(status)
-	fmt.Fprintf(out.w, message)
+	OutputHelper{w}.WriteJson(payment)
+	return
 }
