@@ -68,8 +68,12 @@ func main() {
 			server.ListPayments(w, r)
 		case "POST":
 			server.CreatePayment(w, r)
+		case "DELETE":
+			server.DeletePayment(w, r)
+		case "PUT", "PATCH":
+			server.UpdatePayment(w, r)
 		default:
-			OutputHelper{w}.WriteErrorMessage(http.StatusNotFound, "Method Not Supported")
+			OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Method Not Supported")
 		}
 	})
 	router.HandleFunc("/payments/{payment_id}", server.GetPayment)
@@ -261,5 +265,20 @@ func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 
 	// Transform Output to JSON
 	OutputHelper{w}.WriteJson(payment)
+	return
+}
+
+func (srv *Server) DeletePayment(w http.ResponseWriter, r *http.Request) {
+	// Payment Deletion not Supported -- This may be used for Payment *Reversal* in the future
+	// It may be worth implementing reversals via a specific endpoint rather than Method DELETE
+	OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Payments may not be deleted")
+	return
+}
+
+func (srv *Server) UpdatePayment(w http.ResponseWriter, r *http.Request) {
+	// Payment Modification not Supported -- Payment state should only change via a limited
+	// number of exposed methods. This may include payment reversal and payment processing status
+	// (for asyncronous payments) in future versions.
+	OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Payments may not be modified")
 	return
 }
