@@ -6,17 +6,54 @@ Starbuck User backend is responsible for user authentication and registration. J
 | -------------- | ----------- | -----------|
 | HS256          | bit-flip    | 300 seconds|
 
+
+## API Reference
+
 - [Login](#login)
 - [Signup](#signup)
 - [Logout](#logout)
 - [Get User](#get-user)
 
-## API Reference
-
 ### Login
 
 #### POST /starbucks/v1/login
-##### Request Headers
+##### Request
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| N/A | N/A |
+
+`Body`
+
+```json
+{
+  "email": string,
+  "password": string
+}
+```
+
+##### Response
+`Status: 200 Ok`
+
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| Authorization | jwt token-content |
+
+`Body`
+
+```json
+{
+    "msg": "Login success",
+    "user_id": string
+}
+```
+
+| Property Name | Type | Description |
+|---------------|------|-------------|
+| `user_id` | string | Format UUID v4 |
 
 ---
 
@@ -24,6 +61,45 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 #### POST /starbucks/v1/signup
 ##### Request Headers
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| N/A | N/A |
+
+`Body`
+
+```json
+{
+  "email": string,
+  "password": string,
+  "firstname": string,
+  "lastname": string
+}
+```
+
+##### Response
+`Status: 200 Ok`
+
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| Authorization | jwt token-content |
+
+`Body`
+
+```json
+{
+    "msg": "Signup success",
+    "user_id": string
+}
+```
+
+| Property Name | Type | Description |
+|---------------|------|-------------|
+| `user_id` | string | Format UUID v4 |
+
 
 ---
 
@@ -31,6 +107,37 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 #### POST /starbucks/v1/logout
 ##### Request Headers
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| N/A | N/A |
+
+`Body`
+
+```json
+{
+  "email": string,
+  "password": string
+}
+```
+
+##### Response
+`Status: 200 Ok`
+
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| N/A | N/A |
+
+`Body`
+
+```json
+{
+    "msg": "Logout success"
+}
+```
 
 ---
 
@@ -38,5 +145,39 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 #### POST /starbucks/v1/user/{user_id}
 ##### Request Headers
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| Authorization | jwt token-content |
+
+`Body`
+
+```json
+```
+
+##### Response
+`Status: 200 Ok`
+
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| Authorization | jwt token-content |
+
+`Body`
+
+```json
+{
+    "url": "http://team-bit-flip-fake-url/starbucks/v1/user/{user_id}",
+    "email": string,
+    "firstname": string,
+    "lastname": string
+}
+```
+
+---
+
+#### Resources
 
 ---
