@@ -12,7 +12,7 @@ CREATE TYPE starbucks.billing_details (
     line2 text,
     city text,
     state text,
-    zipcode text
+    zip_code text
 );
 
 # Create Type for Card Details

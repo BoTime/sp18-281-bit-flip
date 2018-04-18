@@ -28,7 +28,7 @@ type BillingDetails struct {
 	Line2 string `json:"line2"`
 	City string `json:"city"`
 	State string `json:"state"`
-	ZipCode string `json:"zipcode"`
+	ZipCode string `json:"zip_code"`
 }
 
 // ListPaymentsResult model
