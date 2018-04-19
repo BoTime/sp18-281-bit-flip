@@ -17,6 +17,7 @@
 | /menu      | GET   | Get menu | [] |
 | /product/:id| GET   | Get product information by id | {} |
 | /product | POST  | Add a new product | {} |
+| /product/:id| PUT| Modify a product by id | {} |
 | /product/:id| DELETE| Delete a product by id | {} |
 
 ### Order Management
