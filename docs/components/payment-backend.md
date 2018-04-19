@@ -30,7 +30,9 @@ Process a payment request.
   },
   "card_details": {
     "number": "4111111111111111",
-    "expiration": "04/18"
+    "cvv": "111",
+    "exp_month": "04",
+    "exp_year": "2018"
   }
 }
 ```
@@ -46,7 +48,9 @@ Process a payment request.
 | `billing_details.state` | string | Customer Billing State. |
 | `billing_details.zip_code` | string | Customer Billing Zip Code. |
 | `card_details.number` | string | Customer Payment Card Number. |
-| `card_details.expiration` | string | Customer Payment Card Expiration. |
+| `card_details.cvv` | string | Customer Payment Card CVV -- Not Stored. |
+| `card_details.exp_month` | string | Customer Payment Card Expiration Month. |
+| `card_details.exp_year` | string | Customer Payment Card Expiration Year. |
 
 ##### Response Body
 
@@ -64,7 +68,9 @@ Process a payment request.
   },
   "card_details": {
     "number": "4111111111111111",
-    "expiration": "04/18"
+    "cvv": "111",
+    "exp_month": "04",
+    "exp_year": "2018"
   },
   "payment_id": "52a1972c-4451-11e8-842f-0ed5f89f718b",
   "status": "Approved",
@@ -82,7 +88,9 @@ Process a payment request.
 | `billing_details.state` | string | Customer Billing State. |
 | `billing_details.zip_code` | string | Customer Billing Zip Code. |
 | `card_details.number` | string | Customer Payment Card Number. |
-| `card_details.expiration` | string | Customer Payment Card Expiration. |
+| `card_details.cvv` | string | Customer Payment Card CVV -- Not Stored. |
+| `card_details.exp_month` | string | Customer Payment Card Expiration Month. |
+| `card_details.exp_year` | string | Customer Payment Card Expiration Year. |
 | `payment_id` | string | Payment Identifier. |
 | `status` | string | Payment Status. |
 
@@ -135,7 +143,9 @@ Do not submit a request body.
 | `billing_details.state` | string | Customer Billing State. |
 | `billing_details.zip_code` | string | Customer Billing Zip Code. |
 | `card_details.number` | string | Customer Payment Card Number. |
-| `card_details.expiration` | string | Customer Payment Card Expiration. |
+| `card_details.cvv` | string | `null` -- Customer Payment Card CVV is not Stored. |
+| `card_details.exp_month` | string | Customer Payment Card Expiration Month. |
+| `card_details.exp_year` | string | Customer Payment Card Expiration Year. |
 | `payment_id` | string | Payment Identifier. |
 | `status` | string | Payment Status. |
 
@@ -179,7 +189,9 @@ Do not submit a request body.
       },
       "card_details": {
         "number": "4111111111111111",
-        "expiration": "04/18"
+        "cvv": null,
+        "exp_month": "04",
+        "exp_year": "2018"
       },
       "payment_id": "52a1972c-4451-11e8-842f-0ed5f89f718b",
       "status": "Approved",
@@ -198,6 +210,8 @@ Do not submit a request body.
 | `payments[].payments[].billing_details.state` | string | Customer Billing State. |
 | `payments[].billing_details.zip_code` | string | Customer Billing Zip Code. |
 | `payments[].card_details.number` | string | Customer Payment Card Number. |
-| `payments[].card_details.expiration` | string | Customer Payment Card Expiration. |
+| `payments[].card_details.cvv` | string | `null` -- Customer Payment Card CVV is not Stored. |
+| `payments[].card_details.exp_month` | string | Customer Payment Card Expiration Month. |
+| `payments[].card_details.exp_year` | string | Customer Payment Card Expiration Year. |
 | `payments[].payment_id` | string | Payment Identifier. |
 | `payments[].status` | string | Payment Status. |

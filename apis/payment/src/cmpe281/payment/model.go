@@ -17,7 +17,9 @@ type PaymentDetails struct {
 // CardDetails model
 type CardDetails struct {
 	Number string `json:"number"`
-	Expiration string `json:"expiration"`
+	Cvv string `json:"cvv" db:"-"`
+	ExpMonth string `json:"exp_month"`
+	ExpYear string `json:"exp_year"`
 }
 
 // BillingDetails model
