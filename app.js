@@ -34,6 +34,7 @@ var port = 8000;
 app.listen(port);
 console.log("Listening on port 8000");
 
+
 /*app.use(function(req, res, next)
     {
         req.db = db;
@@ -41,9 +42,7 @@ console.log("Listening on port 8000");
     }
 );*/
 
-
-
-var html_file_name ='./public/index.html';
+// var html_file_name ='./public/index.html';
 
 //To store valid user credentials
 var valid_password="xxxx";
@@ -52,15 +51,24 @@ var valid_user="xxxx";
 
 
 // view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 // Use the bodyParser() middleware for all routes.
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser());
 app.use(cookieParser());
 
+// Applied routes
+// 1. /
+// 2. /index
+// 3. /menu
+// 4. /contact
 app.use('/', index);
-app.use('/sign-in', sign_in);
-app.use('/sign-up', sign_up);
 
+app.use('/signin', sign_in);
+// app.use('/signup', sign_up);
+
+app.get('/home', function (req, res) {
+  res.render('home', { name: 'Bob Marley' })
+})
