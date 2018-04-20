@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/durango/go-credit-card"
 	"github.com/gocql/gocql"
 	"github.com/gorilla/mux"
 	"github.com/scylladb/gocqlx"
@@ -52,7 +53,6 @@ func main() {
 	session, err := cluster.CreateSession()
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 	fmt.Printf("Done")
 
@@ -63,7 +63,20 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Use(server.AuthMiddleware)
-	router.HandleFunc("/payments", server.ListPayments)
+	router.HandleFunc("/payments", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			server.ListPayments(w, r)
+		case "POST":
+			server.CreatePayment(w, r)
+		case "DELETE":
+			server.DeletePayment(w, r)
+		case "PUT", "PATCH":
+			server.UpdatePayment(w, r)
+		default:
+			OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Method Not Supported")
+		}
+	})
 	router.HandleFunc("/payments/{payment_id}", server.GetPayment)
 
 	srv := &http.Server{
@@ -134,9 +147,9 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 	// Parse Query Parameters
 	limit, pageToken := GetPagination(r)
 
-	// Set up Query
+	// Parse Query Inputs
 	querySelectors := qb.M{
-		"user_id": nil,
+		"user_id":    nil,
 		"payment_id": nil,
 	}
 	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
@@ -159,39 +172,74 @@ func (srv *Server) ListPayments(w http.ResponseWriter, r *http.Request) {
 	// Execute Query
 	var payments []PaymentDetails
 	if err := gocqlx.Iter(q.Query).Unsafe().Select(&payments); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	// Build Response Structure
+	// Build Next Page Token
 	var nextPageToken *gocql.UUID
 	if len(payments) > 0 {
 		nextPageToken = &payments[len(payments)-1].PaymentId
 	}
-	result := &ListPaymentsResult{
+
+	// Transform Output to JSON
+	OutputHelper{w}.WriteJson(&ListPaymentsResult{
 		Payments:      payments,
 		NextPageToken: nextPageToken,
+	})
+}
+
+func (srv *Server) CreatePayment(w http.ResponseWriter, r *http.Request) {
+	var payment *PaymentDetails
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&payment); err != nil {
+		log.Println(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusBadRequest, "Bad Request")
+		return
+	}
+
+	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
+		payment.UserId = userId
+	} else {
+		log.Println(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusUnauthorized, "Unable to Authenticate")
+		return
+	}
+	payment.PaymentId = gocql.TimeUUID()
+
+	card := &creditcard.Card{
+		Number: payment.CardDetails.Number,
+		Cvv:    "111",
+		Month:  payment.CardDetails.ExpMonth,
+		Year:   payment.CardDetails.ExpYear,
+	}
+	if err := card.Validate( /* allowTestNumbers= */ true); err != nil {
+		payment.Status = "Declined" // Invalid Card --> Declined :(
+	} else {
+		payment.Status = "Approved" // Valid Card --> Approved :)
+	}
+
+	query, names := qb.Insert("payments").Columns("card_details", "billing_details", "user_id", "payment_id", "status", "amount").ToCql()
+	q := gocqlx.Query(srv.cassandra.Query(query), names).BindStruct(payment)
+
+	if err := q.ExecRelease(); err != nil {
+		log.Println(err)
+		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Failed to create Payment")
+		return
 	}
 
 	// Transform Output to JSON
-	if output, err := json.Marshal(result); err != nil {
-		log.Fatal(err)
-		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
-		return
-	} else {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(output)
-	}
+	OutputHelper{w}.WriteJson(payment)
+	return
 }
 
 func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	// Set up Query
+	// Parse Query Inputs
 	querySelectors := qb.M{
-		"user_id": nil,
+		"user_id":    nil,
 		"payment_id": nil,
 	}
 	if userId, err := gocql.ParseUUID(GetUserId(r)); err == nil {
@@ -204,6 +252,7 @@ func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 		querySelectors["payment_id"] = paymentId
 	} else {
 		OutputHelper{w}.WriteErrorMessage(http.StatusBadRequest, "Payment ID not provided")
+		return
 	}
 
 	// Set up Query
@@ -215,29 +264,33 @@ func (srv *Server) GetPayment(w http.ResponseWriter, r *http.Request) {
 	// Execute Query
 	var payment PaymentDetails
 	if err := gocqlx.Iter(q.Query).Unsafe().Get(&payment); err != nil {
-		log.Fatal(err)
-		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
-		return
+		switch err {
+		case gocql.ErrNotFound:
+			OutputHelper{w}.WriteErrorMessage(http.StatusNotFound, "Payment not found")
+			return
+		default:
+			log.Println(err)
+			OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
 	}
 
 	// Transform Output to JSON
-	if output, err := json.Marshal(payment); err != nil {
-		log.Fatal(err)
-		OutputHelper{w}.WriteErrorMessage(http.StatusInternalServerError, "Internal Server Error")
-		return
-	} else {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write(output)
-	}
-
+	OutputHelper{w}.WriteJson(payment)
+	return
 }
 
-type OutputHelper struct {
-	w http.ResponseWriter
+func (srv *Server) DeletePayment(w http.ResponseWriter, r *http.Request) {
+	// Payment Deletion not Supported -- This may be used for Payment *Reversal* in the future
+	// It may be worth implementing reversals via a specific endpoint rather than Method DELETE
+	OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Payments may not be deleted")
+	return
 }
 
-func (out OutputHelper) WriteErrorMessage(status int, message string) {
-	out.w.WriteHeader(status)
-	fmt.Fprintf(out.w, message)
+func (srv *Server) UpdatePayment(w http.ResponseWriter, r *http.Request) {
+	// Payment Modification not Supported -- Payment state should only change via a limited
+	// number of exposed methods. This may include payment reversal and payment processing status
+	// (for asyncronous payments) in future versions.
+	OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Payments may not be modified")
+	return
 }
