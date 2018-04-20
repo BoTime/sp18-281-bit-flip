@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/durango/go-credit-card"
 	"github.com/gocql/gocql"
 	"github.com/gorilla/mux"
 	"github.com/scylladb/gocqlx"
@@ -206,7 +207,18 @@ func (srv *Server) CreatePayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	payment.PaymentId = gocql.TimeUUID()
-	payment.Status = "Processed" // Fake Payment Processing -- Always Succeed :)
+
+	card := &creditcard.Card{
+		Number: payment.CardDetails.Number,
+		Cvv:    "111",
+		Month:  payment.CardDetails.ExpMonth,
+		Year:   payment.CardDetails.ExpYear,
+	}
+	if err := card.Validate( /* allowTestNumbers= */ true); err != nil {
+		payment.Status = "Declined" // Invalid Card --> Declined :(
+	} else {
+		payment.Status = "Approved" // Valid Card --> Approved :)
+	}
 
 	query, names := qb.Insert("payments").Columns("card_details", "billing_details", "user_id", "payment_id", "status", "amount").ToCql()
 	q := gocqlx.Query(srv.cassandra.Query(query), names).BindStruct(payment)
