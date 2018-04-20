@@ -36,7 +36,7 @@ Load Balancer URLs:
 - Inventory
 
 
-- Order
+- [Order](orderLB-2141712569.us-west-1.elb.amazonaws.com)
 
 ---
 

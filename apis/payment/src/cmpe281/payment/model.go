@@ -6,7 +6,7 @@ import (
 
 // PaymentDetails model
 type PaymentDetails struct {
-	userId    gocql.UUID
+	UserId    gocql.UUID `db:"user_id" json:"-"`
 	PaymentId gocql.UUID `json:"payment_id"`
 	Amount    float64    `json:"amount"`
 	Status    string     `json:"status"`
@@ -17,7 +17,9 @@ type PaymentDetails struct {
 // CardDetails model
 type CardDetails struct {
 	Number string `json:"number"`
-	Expiration string `json:"expiration"`
+	Cvv string `json:"cvv" db:"-"`
+	ExpMonth string `json:"exp_month"`
+	ExpYear string `json:"exp_year"`
 }
 
 // BillingDetails model
@@ -28,7 +30,7 @@ type BillingDetails struct {
 	Line2 string `json:"line2"`
 	City string `json:"city"`
 	State string `json:"state"`
-	ZipCode string `json:"zipcode"`
+	ZipCode string `json:"zip_code"`
 }
 
 // ListPaymentsResult model
