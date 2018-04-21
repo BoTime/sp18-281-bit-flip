@@ -72,6 +72,13 @@ func main() {
 		return
 	})
 
+	// Root API Handler
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Starbcuks Payments API")
+		return
+	})
+
 	// Payment API Handler
 	{
 		paymentRouter := router.PathPrefix("/payments").Subrouter()
