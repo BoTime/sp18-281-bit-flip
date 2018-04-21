@@ -74,10 +74,9 @@ func main() {
 
 	// Payment API Handler
 	{
-		paymentRouter := mux.NewRouter()
+		paymentRouter := router.PathPrefix("/payments").Subrouter()
 		paymentRouter.Use(server.AuthMiddleware)
-		paymentRouter.HandleFunc("/{payment_id}", server.GetPayment)
-		paymentRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		paymentRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 			switch r.Method {
 			case "GET":
 				server.ListPayments(w, r)
@@ -91,7 +90,7 @@ func main() {
 				OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Method Not Supported")
 			}
 		})
-		router.PathPrefix("/payments").Handler(paymentRouter)
+		paymentRouter.HandleFunc("/{payment_id}", server.GetPayment)
 	}
 
 	srv := &http.Server{
