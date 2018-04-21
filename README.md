@@ -25,16 +25,13 @@ Please use below link for editing (Please sign into your SJSU gmail id)
 
 
 Load Balancer URLs:
-- [User](http://cmpe281-team-project-user-api-995132055.us-west-1.elb.amazonaws.com/)
-
+- [Kong](http://kong-lb-133222058.us-west-1.elb.amazonaws.com/)
     port: `80`
-
-- Payment
-
-
+- [User](http://cmpe281-team-project-user-api-995132055.us-west-1.elb.amazonaws.com/)
+    port: `80`
+- [Payment](payments-lb-853644621.us-west-1.elb.amazonaws.com)
+    port: `80`
 - Inventory
-
-
 - [Order](orderLB-2141712569.us-west-1.elb.amazonaws.com)
 
 ---
