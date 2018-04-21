@@ -92,11 +92,42 @@
 			parentdiv.remove();
 			doCal();
 		};
+
+		<!--To check if a given month or year is valid for the card, moy=1 for year, moy = 0 for month-->
+		function CheckDate(element,moy ){
+			console.log("CheckDate");
+			var today = new Date();
+			console.log(today);
+			var month = today.getMonth()+1; // Returns 9
+			var year = today.getFullYear(); // Returns 2017
+			console.log(year);
+			console.log(month);
+			var inputYr = $(element).val();
+			console.log(inputYr);
+			var inputmnth = $(element).val();
+			console.log(inputmnth);
+			if (moy){
+				if((inputYr<year && inputYr!= "")|| (inputYr==year && inputmnth!= "" && inputmnth<=month)){
+					console.log("in moy = 1");
+					$(element).val("");
+					alert("The card is expired, check expiry date");
+				}
+			}
+			else{
+				if(inputYr<year || (inputYr==year && inputYr!= "" && inputmnth<=month)){
+					console.log("in moy = 0");
+					$(element).val("");
+					alert("The card is expired, check expiry date");
+				}
+			}
+		};
+		
 	</script>
 
 </head>
 
 <body class="home-page">
+	<span class="popuptext" id="myPopup"></span>
 	<div class="wrap-body">
 		<div class="header">
 			<div id='cssmenu' >
@@ -113,7 +144,7 @@
 										<div>
 											<div class="wrap-col">
 												<p>Select Store</p>
-												<select name="Store" id = "store" style="padding:10px;">
+												<select name="store" id = "store" style="padding:10px;">
 													<option value="store1">San Jose</option>
 													<option value="store2">Mountain View</option>
 												</select>
@@ -172,7 +203,9 @@
 											</div>
 											<br>
 											<div style="clear:both;">
-												<input type="number" name="card" placeholder="Card Number" style="width:50%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
+												<input type="number" name="card" placeholder="Card Number" style="width:30%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
+												<input type="number" name="exp_month" placeholder="Expiry month" style="width:20%;float:left;margin-left:30px;" required min="1" max ="12" >
+												<input type="number" name="exp_yr" placeholder="Expiry year" style="width:20%;float:left;margin-left:30px;" required min="2018" max = "2050" )>
 											</div>
 											<div style="clear:both;">
 												<input type="text" name="add1" placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
@@ -193,7 +226,7 @@
 											 <input  id = "total" type="text" name="amount" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
 										</div>
 										<div style="width:30%;float:right;margin-right:20%;">
-											<center><input style = "width:80%;padding:10px;background-color:black;color:#0aac8e;font-weight:bold;font-size:16px;border-radius: 12px;border: 2px solid white;" type="submit" name="checkout" value="Checkout" id="submit"></center>
+											<center><button style = "width:80%;padding:10px;background-color:black;color:#0aac8e;font-weight:bold;font-size:16px;border-radius: 12px;border: 2px solid white;" id="submit">Checkout</center>
 										</div>
 									</label>
 								</form>
