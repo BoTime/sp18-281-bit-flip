@@ -7,4 +7,5 @@ WORKDIR /app/
 RUN (cd src/cmpe281/payment; go get; go build)
 ENV IP 0.0.0.0
 ENV PORT 80
-CMD ["sh", "-c", "/app/bin/payment --dbuser=$DBUSER --dbpass=$DBPASS --ip=$IP --port=$PORT"]
+ENV DEBUG false
+CMD ["sh", "-c", "/app/bin/payment --dbuser=$DBUSER --dbpass=$DBPASS --ip=$IP --port=$PORT --debug=$DEBUG"]
