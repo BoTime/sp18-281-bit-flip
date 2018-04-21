@@ -15,10 +15,11 @@ CREATE TYPE starbucks.billing_details (
     zip_code text
 );
 
-# Create Type for Card Details
+# Create Type for Card Details (Omit CVV)
 CREATE TYPE starbucks.card_details (
     number text,
-    expiration date
+    exp_month text,
+    exp_year text
 );
 
 # Create Payments Table
