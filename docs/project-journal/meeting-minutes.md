@@ -60,14 +60,42 @@
 ## Action Items
 | Items | Person Responsible  | Deadline |
 | :---- | :------------------ | :---:|
-| Prepare LB for individual function modules to allow kong configurations. | All | April 22 (Sat) |
-| Start with individual work assigned. | All | April 22 (Sat) |
-| Prepare action items for next meeting. | All | April 22 (Sat) |
+| Prepare LB for individual function modules to allow kong configurations. | All | April 21 (Sat) |
+| Start with individual work assigned. | All | April 21 (Sat) |
+| Prepare action items for next meeting. | All | April 21 (Sat) |
 
 ### Decisions made
 - Have inventory database sharded based on 2 store locations.
 - App level will consist of basic user authentication.
 - Order module will re-authenticate with User module for each request.
+
+
+---
+## Meeting - 03
+
+| LOCATION | ONLINE |
+|:----|:----|
+| **Date** | 2018/04/20 |
+| **Facilitator** | N/A |
+| **Timer** | N/A |
+| **Note Taker** | Vimmi |
+| **Attendees** | Brian Bamsch<br>Bo Liu<br>Masi Nazarian<br>Vimmi Swami<br> |
+
+### Agenda Topics
+1. Discuss Authentication of user and its processing 
+2. Discuss Order and payment Interface 
+3. Discuss TODO items for meeting on 4/21/2018.
+ 
+
+## Action Items
+| Items | Person Responsible  | Deadline |
+| :---- | :------------------ | :---:|
+| Get basic API interface setup with backend DB | All | April 21 (Sat) |
+
+### Decisions made
+- Authenticating token Id will be sent to GO backend servers too by frontend app server.
+- Each bckend server will have sufficient data to decode token to user_id without communicating with User backend.
+- Each Backend server will send auth token id along with its request to other backend APIs while communicating.
 
 
 ---
