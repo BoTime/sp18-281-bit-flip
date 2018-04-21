@@ -7,7 +7,7 @@ Starbucks Payment backend is responsible for accepting and processing payment fo
 
 Process a payment request.
 
-#### POST /starbucks/v1/payments
+#### POST /payments/v1/payments
 ##### Request Headers
 
 | Header | Description |
@@ -98,7 +98,7 @@ Process a payment request.
 
 Retrieve a payment by ID.
 
-#### GET /starbucks/v1/payments/{payment_id}
+#### GET /payments/v1/payments/{payment_id}
 ##### Request Headers
 
 | Header | Description |
@@ -153,7 +153,7 @@ Do not submit a request body.
 
 List all payments for current user.
 
-#### GET /starbucks/v1/payments
+#### GET /payments/v1/payments
 ##### Request Headers
 
 | Header | Description |

@@ -1,13 +1,13 @@
 # Order Backend
 
-Starbucks Order backend is responsible for accepting Starbucks drink orders as placed by the customer. An order consists of both the items being ordered as well as payment details which are forwarded to the Payment service for processing for approval or decline.
+Starbcuks Order backend is responsible for accepting Starbcuks drink orders as placed by the customer. An order consists of both the items being ordered as well as payment details which are forwarded to the Payment service for processing for approval or decline.
 
 ## API Reference
 ### Create Order
 
-Create a Starbucks drink order.
+Create a Starbcuks drink order.
 
-#### POST /starbucks/v1/orders
+#### POST /orders/v1/orders
 ##### Request Headers
 
 | Header | Description |
@@ -32,9 +32,9 @@ Create a Starbucks drink order.
 
 ### List Orders
 
-List all Starbucks drink orders.
+List all Starbcuks drink orders.
 
-#### GET /starbucks/v1/orders
+#### GET /orders/v1/orders
 ##### Request Headers
 
 | Header | Description |
@@ -56,14 +56,14 @@ Do not supply a request body for this method.
 ```
 
 ### Get Order
-#### GET /starbucks/v1/orders/{orderid}
+#### GET /orders/v1/orders/{orderid}
 ##### Request Headers
 
 | Header | Description |
 |--------|-------------|
 | Authorization | User Credential for Authorization Verification |
 
-Retrieve details for a Starbucks drink order.
+Retrieve details for a Starbcuks drink order.
 
 ##### Request Body
 
@@ -74,12 +74,12 @@ Do not supply a request body for this method.
 Returns an [Order Resource](#Order-Resource)
 
 ### Update Order
-#### PATCH /starbucks/v1/orders/{orderid}
+#### PATCH /orders/v1/orders/{orderid}
 
 Not Supported
 
 ### Delete Order
-#### DELETE /starbucks/v1/orders/{orderid}
+#### DELETE /orders/v1/orders/{orderid}
 
 Not Supported
 

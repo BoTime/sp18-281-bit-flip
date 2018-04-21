@@ -16,7 +16,7 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 ### Login
 
-#### POST /starbucks/v1/login
+#### POST /users/v1/login
 ##### Request
 `Header`
 
@@ -59,7 +59,7 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 ### Signup
 
-#### POST /starbucks/v1/signup
+#### POST /users/v1/signup
 ##### Request Headers
 `Header`
 
@@ -105,7 +105,7 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 ### Logout
 
-#### POST /starbucks/v1/logout
+#### POST /users/v1/logout
 ##### Request Headers
 `Header`
 
@@ -143,7 +143,7 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 ### Get User
 
-#### POST /starbucks/v1/user/{user_id}
+#### POST /users/v1/user/{user_id}
 ##### Request Headers
 `Header`
 
@@ -169,7 +169,7 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 ```json
 {
-    "url": "http://team-bit-flip-fake-url/starbucks/v1/user/{user_id}",
+    "url": "http://team-bit-flip-fake-url/users/v1/user/{user_id}",
     "email": string,
     "firstname": string,
     "lastname": string
