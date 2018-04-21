@@ -4,7 +4,7 @@ import (
     "net/http"
     _ "encoding/json"
     "fmt"
-    _ "cmpe281/users/models"
+    _ "cmpe281/user/models"
 )
 
 func ListUsersHandler(w http.ResponseWriter, r *http.Request) {

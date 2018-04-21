@@ -11,7 +11,7 @@ import (
     "github.com/gorilla/mux"
     "github.com/urfave/negroni"
     "cmpe281/common"
-    "cmpe281/users/handlers"
+    "cmpe281/user/handlers"
 )
 
 func InitRoutes() *negroni.Negroni {

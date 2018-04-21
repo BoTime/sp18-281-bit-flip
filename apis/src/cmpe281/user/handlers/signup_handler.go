@@ -4,7 +4,7 @@ import (
     "net/http"
     "encoding/json"
     "fmt"
-    "cmpe281/users/models"
+    "cmpe281/user/models"
     "cmpe281/common"
 )
 

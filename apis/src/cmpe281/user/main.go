@@ -3,7 +3,7 @@ package main
 import (
     "log"
     "net/http"
-    "cmpe281/users/router"
+    "cmpe281/user/router"
     "os"
 )
 
