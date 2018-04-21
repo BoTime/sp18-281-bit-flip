@@ -21,7 +21,7 @@ import (
 
 func main() {
 	var wait time.Duration
-	var dbuser, dbpass, dbkeyspace, dbhosts string
+	var dbuser, dbpass, dbkeyspace, dbhosts, ip, port string
 	var debug bool
 	flag.DurationVar(&wait, "graceful-timeout", time.Second*15,
 		"the duration for which the server gracefully wait for existing connections to finish - e.g. 15s or 1m")
@@ -33,6 +33,8 @@ func main() {
 		"the keyspace for cassandra database connection")
 	flag.StringVar(&dbhosts, "dbhosts", "54.176.100.87,54.241.192.98",
 		"the hosts (comma separated) for cassandra database connection")
+	flag.StringVar(&ip, "ip", "0.0.0.0", "ip address to listen on")
+	flag.StringVar(&port, "port", "8080", "port to listen on")
 	flag.BoolVar(&debug, "debug", false, "run server in debug mode")
 	flag.Parse()
 
@@ -62,6 +64,13 @@ func main() {
 	}
 
 	router := mux.NewRouter()
+
+	router.HandleFunc("/index.html", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, "OK")
+		return
+	})
+
 	router.Use(server.AuthMiddleware)
 	router.HandleFunc("/payments", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
@@ -80,7 +89,7 @@ func main() {
 	router.HandleFunc("/payments/{payment_id}", server.GetPayment)
 
 	srv := &http.Server{
-		Addr:         "0.0.0.0:8080",
+		Addr:         fmt.Sprintf("%s:%s", ip, port),
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
@@ -89,6 +98,7 @@ func main() {
 
 	// Run our server in a goroutine so that it doesn't block.
 	go func() {
+		log.Printf("Binding to %s:%s", ip, port)
 		if err := srv.ListenAndServe(); err != nil {
 			log.Println(err)
 		}
