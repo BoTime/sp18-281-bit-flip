@@ -1,6 +1,9 @@
-```go
+/**
+ * Author: Bo
+ */
+
 // Generate and validate JWT tokens
-package utils
+package common
 
 import (
     "fmt"
@@ -48,9 +51,7 @@ func IssueToken(jsonPayload []byte) (string, error) {
 
 
 func IssueTokenForUserId(userId *uuid.UUID) (string, error) {
-    jsonString := `{"userId":"` + userId.String() + `"}`
+    jsonString := `{"user_id":"` + userId.String() + `"}`
     tokenString, err := IssueToken([]byte(jsonString))
     return tokenString, err
 }
-
-```
