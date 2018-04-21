@@ -19,6 +19,7 @@ const signinRouter = require('./routes/sign-in');
 const signupRouter = require('./routes/sign-up');
 const homeRouter = require('./routes/home');
 const indexRouter = require('./routes/index');
+const orderRouter = require('./routes/order');
 
 // Create the app.
 var app = express();
@@ -59,6 +60,7 @@ app.use('/signin', signinRouter);
 app.use('/signup', signupRouter);
 app.use('/logout', (req, res) => res.redirect('/signin'));
 app.use('/home', homeRouter);
+app.use('/order', orderRouter);
 
 
 

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<!-- https://www.html5xcss3.com/2016/07/cafehome-free-html5-template.html-->
+<head>
+
+    <!-- Basic Page Needs
+  ================================================== -->
+	<meta charset="utf-8">
+	<title>StarBcuks</title>
+	<meta name="description" content="Free Responsive Html5 Css3 Templates | html5xcss3.com">
+	<meta name="author" content="www.html5xcss3.com">
+
+    <!-- Mobile Specific Metas
+	================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+	================================================== -->
+  	<link rel="stylesheet" href="css/zerogrid.css">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/lightbox.css">
+
+	<!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+	<link rel="stylesheet" href="css/menu.css">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			ResetRow();
+			doCal();
+		});
+		var current_id = 0;
+		function ResetRow(){
+			console.log("Reset Called");
+			var rowdiv = $("#row1");
+			$('select:eq(0)', rowdiv).prop('selectedIndex',0);
+			$('select:eq(1)', rowdiv).prop('selectedIndex',0);
+			$('select:eq(2)', rowdiv).prop('selectedIndex',0);
+		}
+		function AddRow(){
+
+			current_id = $("#prod > div").length + 1;
+			div = $("#row1");
+			var newdiv=div.clone();
+			newdiv.attr('id',"row"+current_id);
+			$(newdiv).find("#del").css('visibility','visible');
+			$(newdiv).find("#del").attr('class',"row"+current_id);
+			$(newdiv).find('span.amount').html(5);
+			console.log(newdiv.attr('id'));
+			newdiv.appendTo($("#prod"));
+			doCal();
+		}
+		function doCal(){
+			console.log("docal");
+			var total = 0;
+
+			$('.amount').each(function() {
+				console.log("inside");
+				total += parseInt($(this).text(),10);
+			});
+			console.log(total);
+			$("#total").val(total);
+		}
+		function updateAmount(element){
+			console.log("UpdateAmount");
+			var rowdiv =$(element).parent();
+			console.log(rowdiv);
+			console.log(rowdiv.attr('id'));
+			if ( $('select:eq(2)', rowdiv).val() === 'small'){
+				console.log($('select:eq(2)', rowdiv).val());
+				$(rowdiv).find('span.amount').html($('select:eq(1)', rowdiv).val() * 5);
+			}
+			else if ($('select:eq(2)', rowdiv).val()=== 'medium'){
+				$(rowdiv).find('span.amount').html($('select:eq(1)', rowdiv).val() * 7);
+			}else{
+				$(rowdiv).find('span.amount').html($('select:eq(1)', rowdiv).val() * 10);
+			}
+			doCal();
+		};
+		function DeleteRow(element){
+			console.log("DeleteRow");
+			var rowid =$(element).attr('class');
+			console.log(rowid);
+			var parentdiv= $("#"+rowid);
+			console.log(parentdiv);
+			console.log(parentdiv.attr('id'));
+			parentdiv.remove();
+			doCal();
+		};
+	</script>
+
+</head>
+
+<body class="home-page">
+	<div class="wrap-body">
+		<div class="header">
+			<div id='cssmenu' >
+				<ul>
+				   <li class="active"><a href='/'><span>StarBcuks</span></a></li>
+				</ul>
+			</div>
+			<div class="custom-banner" style="background-color:black">
+				<div class="wrap-col">
+					<div style="padding:20px">
+							<div>
+								<form name="orderform" class="ff" method="post" action="/order"  enctype="text/html">
+									<label class="row">
+										<div>
+											<div class="wrap-col">
+												<p>Select Store</p>
+												<select name="Store" id = "store" style="padding:10px;">
+													<option value="store1">San Jose</option>
+													<option value="store2">Mountain View</option>
+												</select>
+											</div>
+										</div>
+										<p>Choose Product</p>
+										
+										<div id ="prod">											
+											<div id = "row1">
+													<select name="item" id ="item" style ="float:left;padding:10px;">
+													  <optgroup label="Coffee">
+														<option value="Cappuccino">Cappuccino</option>
+														<option value="Cafe Americano">Cafe Americano</option>
+														<option value="Vanilla Sweet Cream">Vanilla Sweet Cream</option>
+														<option value="Ice Cold Coffee">Ice Cold Coffee</option>
+														<option value="Expresso Machiato">Expresso Machiato</option>
+														<option value="Caffe Late">Caffe Late</option>
+													  </optgroup>
+													  <optgroup label="Tea">
+														<option value="Black Tea">Black Tea</option>
+														<option value="Black Iced Ginger Tea">Black Iced Ginger Tea</option>
+														<option value="Darjieeling Tea">Darjieeling Tea</option>
+														<option value="Lemon Tea">Lemon Tea</option>
+														<option value="English Spice Tea">English Spice Tea</option>
+														<option value="Herbal Tea">Herbal Tea</option>
+													  </optgroup>
+													</select>
+													<select name="qty"  onchange = updateAmount(this) style ="float:left;margin-left:30px;padding:10px;">
+															<option value="1">1</option>
+															<option value="2">2</option>
+															<option value="3">3</option>
+															<option value="4">4</option>
+															<option value="5">5</option>
+														</select>
+													<select name="size"  onchange=updateAmount(this) style ="float:left;margin-left:30px;padding:10px;">
+															<option value="small">Small</option>
+															<option value="medium">Medium</option>
+															<option value="large">Large</option>
+													</select>		
+													<span style ="margin-left:30px;">$</span> 
+													<span style ="color:white;margin-left:5px;" class="amount">5</span> 
+													<button style ="color:red;visibility:hidden; margin-left:5px;" type = "button" id="del" onclick =DeleteRow(this)>X</button>
+												<br>
+												<br>
+											</div>
+										</div>	
+										<br>
+										<button type = "button" id="btn" onclick =AddRow() style ="color:green;font-weight:bold;padding:5px;">Add</button>
+										<br>
+
+										<div>
+											<p>User Details</p>
+											<div">
+												<input type="text" name="first" placeholder="First Name"  style="width:30%;float:left;margin-left:30px;" required>
+												<input type="text" name="second" placeholder="Second Name" style="width:30%;float:left;margin-left:30px;" required>
+											</div>
+											<br>
+											<div style="clear:both;">
+												<input type="number" name="card" placeholder="Card Number" style="width:50%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
+											</div>
+											<div style="clear:both;">
+												<input type="text" name="add1" placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="add2" placeholder="Address 2" style="width:25%;float:left;margin-left:30px;" required>
+											</div>
+											<div style ="clear:both;">
+												<input type="text" name="city" placeholder="City" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="state" placeholder="State" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="number" name="pin" placeholder="pincode" style="width:25%;float:left;margin-left:30px;" required min ="10000" max = "99999">
+											</div>	
+										</div>
+										<br>
+										<br>
+										<br>
+										<br>
+										<div style="display: inline-block;">
+											<span style="width:50%;float: left;">Your Total Amount $</span>
+											 <input  id = "total" type="text" name="amount" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
+										</div>
+										<div style="width:30%;float:right;margin-right:20%;">
+											<center><input style = "width:80%;padding:10px;background-color:black;color:#0aac8e;font-weight:bold;font-size:16px;border-radius: 12px;border: 2px solid white;" type="submit" name="checkout" value="Checkout" id="submit"></center>
+										</div>
+									</label>
+								</form>
+							</div>	
+							
+							<img src="images/main.jpg">
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--////////////////////////////////////Container-->
+
+		<!--////////////////////////////////////Footer-->
+		<footer>
+			<div class="copyright">
+				<div class="zerogrid wrapper">
+					Copyright @ CAFEHOME - Designed by <a href="https://www.html5xcss3.com">HTML5xCSS3</a>
+					<ul class="quick-link">
+						<li><a href="#">Privacy Policy</a></li>
+						<li><a href="#">Terms of Use</a></li>
+					</ul>
+				</div>
+			</div>
+		</footer>
+	</div>
+</body>
+</html>
