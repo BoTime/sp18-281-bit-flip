@@ -15,6 +15,9 @@ git subtree push --prefix StarBcuks heroku master
 ```
 
 ---
+### How to do jwt authentication?
+https://github.com/nguyensjsu/team281-bit-flip/blob/master/apis/users/authentication.md
+
 ### Links
 
 Please use below link for editing (Please sign into your SJSU gmail id)
