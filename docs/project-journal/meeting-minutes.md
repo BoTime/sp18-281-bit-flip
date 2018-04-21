@@ -71,3 +71,31 @@
 
 
 ---
+## Meeting - 03
+
+| LOCATION | ONLINE |
+|:----|:----|
+| **Date** | 2018/04/20 |
+| **Facilitator** | N/A |
+| **Timer** | N/A |
+| **Note Taker** | Vimmi |
+| **Attendees** | Brian Bamsch<br>Bo Liu<br>Masi Nazarian<br>Vimmi Swami<br> |
+
+### Agenda Topics
+1. Discuss Authentication of user and its processing 
+2. Discuss Order and payment Interface 
+3. Discuss TODO items for meeting on 4/21/2018.
+ 
+
+## Action Items
+| Items | Person Responsible  | Deadline |
+| :---- | :------------------ | :---:|
+| Get basic API interface setup with backend DB
+
+### Decisions made
+- Authenticating token Id will be sent to GO backend servers too by frontend app server.
+- Each bckend server will have sufficient data to decode token to user_id without communicating with User backend.
+- Each Backend server will send auth token id along with its request to other backend APIs while communicating.
+
+
+---
