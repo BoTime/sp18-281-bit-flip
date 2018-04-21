@@ -18,10 +18,22 @@ Create a Starbcuks drink order.
 
 ```json
 {
-  "items": [
-    drink Resource
-  ],
-  "payment": payment Resource
+"store": "store1",
+  "product":
+   [ { "item": "Cappuccino", "qty": "1", "size": "small" },
+     { "item": "Expresso Machiato", "qty": "2", "size": "medium" },
+     { "item": "Lemon Tea", "qty": "1", "size": "large" } ],
+"first": "aa",
+"second": "vv",
+"card": "1111111111111111",
+"exp_month": "9",
+"exp_yr": "2018",
+"add1": "hh",
+"add2": "hhh",
+"city": "hh",
+"state": "hh",
+"pin": "11111",
+"amount": "27"
 }
 ```
 
