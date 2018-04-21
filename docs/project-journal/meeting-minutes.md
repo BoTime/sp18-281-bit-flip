@@ -60,9 +60,9 @@
 ## Action Items
 | Items | Person Responsible  | Deadline |
 | :---- | :------------------ | :---:|
-| Prepare LB for individual function modules to allow kong configurations. | All | April 22 (Sat) |
-| Start with individual work assigned. | All | April 22 (Sat) |
-| Prepare action items for next meeting. | All | April 22 (Sat) |
+| Prepare LB for individual function modules to allow kong configurations. | All | April 21 (Sat) |
+| Start with individual work assigned. | All | April 21 (Sat) |
+| Prepare action items for next meeting. | All | April 21 (Sat) |
 
 ### Decisions made
 - Have inventory database sharded based on 2 store locations.
@@ -90,7 +90,7 @@
 ## Action Items
 | Items | Person Responsible  | Deadline |
 | :---- | :------------------ | :---:|
-| Get basic API interface setup with backend DB
+| Get basic API interface setup with backend DB | All | April 21 (Sat) |
 
 ### Decisions made
 - Authenticating token Id will be sent to GO backend servers too by frontend app server.
