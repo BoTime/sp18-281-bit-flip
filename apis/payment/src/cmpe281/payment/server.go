@@ -65,28 +65,34 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// Health Check Handler
 	router.HandleFunc("/index.html", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 		return
 	})
 
-	router.Use(server.AuthMiddleware)
-	router.HandleFunc("/payments", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case "GET":
-			server.ListPayments(w, r)
-		case "POST":
-			server.CreatePayment(w, r)
-		case "DELETE":
-			server.DeletePayment(w, r)
-		case "PUT", "PATCH":
-			server.UpdatePayment(w, r)
-		default:
-			OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Method Not Supported")
-		}
-	})
-	router.HandleFunc("/payments/{payment_id}", server.GetPayment)
+	// Payment API Handler
+	{
+		paymentRouter := mux.NewRouter()
+		paymentRouter.Use(server.AuthMiddleware)
+		paymentRouter.HandleFunc("/{payment_id}", server.GetPayment)
+		paymentRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case "GET":
+				server.ListPayments(w, r)
+			case "POST":
+				server.CreatePayment(w, r)
+			case "DELETE":
+				server.DeletePayment(w, r)
+			case "PUT", "PATCH":
+				server.UpdatePayment(w, r)
+			default:
+				OutputHelper{w}.WriteErrorMessage(http.StatusMethodNotAllowed, "Method Not Supported")
+			}
+		})
+		router.PathPrefix("/payments").Handler(paymentRouter)
+	}
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf("%s:%s", ip, port),
