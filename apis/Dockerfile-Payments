@@ -1,7 +1,7 @@
 FROM golang:latest
 EXPOSE 80
 RUN mkdir /app
-ADD ./src/cmpe281/payment /app/src/cmpe281/payment
+ADD ./src/cmpe281 /app/src/cmpe281
 ENV GOPATH /app
 WORKDIR /app/
 RUN (cd src/cmpe281/payment; go get; go build)
