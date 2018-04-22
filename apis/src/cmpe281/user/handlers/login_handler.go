@@ -23,10 +23,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     if err := json.NewDecoder(r.Body).Decode(&user); err == nil {
         // 1. Get userId
         // ignore error during dev phase
-        if userId, err := user.VerifyPasswordAndReturnUserId(); err == nil && userId != nil {
+        if userId, err := user.VerifyPasswordAndReturnUserId(); err == nil && userId != "" {
 
             // 2. Issue jwt token
-            if tokenString, err := common.IssueTokenForUserId(userId); err == nil {
+            if tokenString, err := common.IssueTokenForUserIdV2(userId); err == nil {
                 w.Header().Set("Authorization", "jwt " + tokenString)
                 w.WriteHeader(http.StatusOK)
 

@@ -16,14 +16,12 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
         responseBody = make(map[string] interface{})
     )
 
-    fmt.Println("==========")
     if err := json.NewDecoder(r.Body).Decode(&user); err == nil {
-        fmt.Println("+++++++")
         // 1. Create a new user
         if userId, err := user.CreateUserId(&user); err == nil && userId != nil {
 
             // 2. Issue jwt token
-            if tokenString, err := common.IssueTokenForUserId(userId); err == nil {
+            if tokenString, err := common.IssueTokenForUserIdV2(userId.String()); err == nil {
                 w.Header().Set("Authorization", "jwt " + tokenString)
                 w.WriteHeader(http.StatusOK)
 

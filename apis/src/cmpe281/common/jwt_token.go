@@ -55,3 +55,9 @@ func IssueTokenForUserId(userId *uuid.UUID) (string, error) {
     tokenString, err := IssueToken([]byte(jsonString))
     return tokenString, err
 }
+
+func IssueTokenForUserIdV2(userId string) (string, error) {
+    jsonString := `{"user_id":"` + userId + `"}`
+    tokenString, err := IssueToken([]byte(jsonString))
+    return tokenString, err
+}

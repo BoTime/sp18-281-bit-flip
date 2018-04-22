@@ -3,7 +3,7 @@ build-master:
 	docker build -t redis:master -f Dockerfile-master .
 run-master:
 	docker run --name redis-master \
-	--net=host \
+	--net=bridge \
 	-p 6379:6379 \
 	-p 26379:26379 \
 	-d redis:master

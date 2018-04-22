@@ -4,10 +4,12 @@ import (
     "log"
     "net/http"
     "cmpe281/user/router"
+    _ "github.com/joho/godotenv"
     "os"
 )
 
 func main() {
+
     // Init routers
     n := router.InitRoutes()
 
