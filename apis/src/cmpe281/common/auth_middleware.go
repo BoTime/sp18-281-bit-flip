@@ -5,15 +5,9 @@ import (
 	"context"
 	"net/http"
 	"github.com/dgrijalva/jwt-go"
-    "github.com/gocql/gocql"
 	"fmt"
 	"strings"
 )
-
-type Server struct {
-	debug     bool
-	cassandra *gocql.Session
-}
 
 var userIdKey = "user_id"
 
@@ -21,28 +15,31 @@ var userIdKey = "user_id"
 
 // Authentication middleware for Payment API
 // Authenticate the User, add 'user_id' to request context
-func (srv *Server) AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("Authorization")
+func AuthMiddleware(debug bool) (func(handler http.Handler) http.Handler) {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := r.Header.Get("Authorization")
 
-		user_id, found := getUser(token)
-		if !found && srv.debug {
-			// Allow passing of User ID directly if in debug mode
-			user_id = r.Header.Get("X-User-ID")
-		}
+			userId, found := getUser(token)
+			if !found && debug {
+				// Allow passing of User ID directly if in debug mode
+				userId = r.Header.Get("X-User-ID")
+			}
 
-		if user_id != "" {
-			// If User ID was found, continue as Authenticated User
-			log.Printf("Authenticated User [%s]", user_id)
-			user_context := context.WithValue(r.Context(), userIdKey, user_id)
-			next.ServeHTTP(w, r.WithContext(user_context))
-		} else {
-			// Else throw error for Unauthenticated User
-			http.Error(w, "Forbidden", http.StatusForbidden)
-		}
-	})
+			if userId != "" {
+				// If User ID was found, continue as Authenticated User
+				log.Printf("Authenticated User [%s]", userId)
+				user_context := context.WithValue(r.Context(), userIdKey, userId)
+				next.ServeHTTP(w, r.WithContext(user_context))
+			} else {
+				// Else throw error for Unauthenticated User
+				http.Error(w, "Forbidden", http.StatusForbidden)
+			}
+		})
+	}
 }
 
+// TODO(bbamsch): Find a way to merge these two handlers?
 // Authentication middleware for Negroni based APIs
 // Authenticate the User, add 'user_id' to request context
 func AuthMiddlewareNegroni(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -58,6 +55,10 @@ func AuthMiddlewareNegroni(w http.ResponseWriter, r *http.Request, next http.Han
 		// Else throw error for Unauthenticated User
 		http.Error(w, "Forbidden", http.StatusForbidden)
 	}
+}
+
+func GetUserId(r *http.Request) string {
+	return r.Context().Value(userIdKey).(string)
 }
 
 // ===== Private Functions ===== //
@@ -109,8 +110,4 @@ func getUserJwt(fields []string) (string, bool) {
 		log.Println("User Auth Token failed Validation")
 		return "", false
 	}
-}
-
-func GetUserId(r *http.Request) string {
-	return r.Context().Value(userIdKey).(string)
 }
