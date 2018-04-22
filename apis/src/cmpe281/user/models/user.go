@@ -49,6 +49,10 @@ func connectRedis() *redis.Client {
     })
 
     log.Println("[*] Connecte to Redis server at ", REDIS_DOMAIN + ":" + REDIS_PORT)
+    if _, err := client.Ping().Result(); err != nil {
+        log.Println("[x] Unable to start Redis server")
+        panic("Redis")
+    }
 
     return client
 }
