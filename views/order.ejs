@@ -51,6 +51,10 @@
 			$(newdiv).find("#del").css('visibility','visible');
 			$(newdiv).find("#del").attr('class',"row"+current_id);
 			$(newdiv).find('span.amount').html(5);
+			var temp = "product["+ (current_id-1);
+			$('select:eq(0)', newdiv).attr('name',temp +"][item]" );
+			$('select:eq(1)', newdiv).attr('name',temp +"][qty]" );
+			$('select:eq(2)', newdiv).attr('name',temp +"][size]" );
 			console.log(newdiv.attr('id'));
 			newdiv.appendTo($("#prod"));
 			doCal();
@@ -154,7 +158,7 @@
 										
 										<div id ="prod">											
 											<div id = "row1">
-													<select name="item" id ="item" style ="float:left;padding:10px;">
+													<select name="product[0][item]" id ="item" style ="float:left;padding:10px;">
 													  <optgroup label="Coffee">
 														<option value="Cappuccino">Cappuccino</option>
 														<option value="Cafe Americano">Cafe Americano</option>
@@ -172,14 +176,14 @@
 														<option value="Herbal Tea">Herbal Tea</option>
 													  </optgroup>
 													</select>
-													<select name="qty"  onchange = updateAmount(this) style ="float:left;margin-left:30px;padding:10px;">
+													<select name="product[0][qty]"  onchange = updateAmount(this) style ="float:left;margin-left:30px;padding:10px;">
 															<option value="1">1</option>
 															<option value="2">2</option>
 															<option value="3">3</option>
 															<option value="4">4</option>
 															<option value="5">5</option>
 														</select>
-													<select name="size"  onchange=updateAmount(this) style ="float:left;margin-left:30px;padding:10px;">
+													<select name="product[0][size]"  onchange=updateAmount(this) style ="float:left;margin-left:30px;padding:10px;">
 															<option value="small">Small</option>
 															<option value="medium">Medium</option>
 															<option value="large">Large</option>
@@ -198,23 +202,24 @@
 										<div>
 											<p>User Details</p>
 											<div">
-												<input type="text" name="first" placeholder="First Name"  style="width:30%;float:left;margin-left:30px;" required>
-												<input type="text" name="second" placeholder="Second Name" style="width:30%;float:left;margin-left:30px;" required>
+												<input type="text" name='payment[billing_details][first_name]]' placeholder="First Name"  style="width:30%;float:left;margin-left:30px;" required>
+												<input type="text" name='payment[billing_details][last_name]]' placeholder="Second Name" style="width:30%;float:left;margin-left:30px;" required>
 											</div>
 											<br>
 											<div style="clear:both;">
-												<input type="number" name="card" placeholder="Card Number" style="width:30%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
-												<input type="number" name="exp_month" placeholder="Expiry month" style="width:20%;float:left;margin-left:30px;" required min="1" max ="12" >
-												<input type="number" name="exp_yr" placeholder="Expiry year" style="width:20%;float:left;margin-left:30px;" required min="2018" max = "2050" )>
+												<input type="number" name='payment[card_details][number]]' placeholder="Card Number" style="width:30%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
+												<input type="number" name='payment[card_details][exp_month]]' placeholder="Expiry month" style="width:20%;float:left;margin-left:30px;" required min="1" max ="12" >
+												<input type="number" name='payment[card_details][exp_year]]' placeholder="Expiry year" style="width:20%;float:left;margin-left:30px;" required min="2018" max = "2050" )>
+												<input type="number" name='payment[card_details][cvv]]' placeholder="CVV" style="width:20%;float:left;margin-left:30px;" required min="100" max = "999" )>
 											</div>
 											<div style="clear:both;">
-												<input type="text" name="add1" placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="text" name="add2" placeholder="Address 2" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name='payment[billing_details][line1]]' placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name='payment[billing_details][line2]]' placeholder="Address 2" style="width:25%;float:left;margin-left:30px;" required>
 											</div>
 											<div style ="clear:both;">
-												<input type="text" name="city" placeholder="City" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="text" name="state" placeholder="State" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="number" name="pin" placeholder="pincode" style="width:25%;float:left;margin-left:30px;" required min ="10000" max = "99999">
+												<input type="text" name='payment[billing_details][city]]' placeholder="City" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name='payment[billing_details][state]]' placeholder="State" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="number" name='payment[billing_details][zip_code]]' placeholder="pincode" style="width:25%;float:left;margin-left:30px;" required min ="10000" max = "99999">
 											</div>	
 										</div>
 										<br>
@@ -223,10 +228,11 @@
 										<br>
 										<div style="display: inline-block;">
 											<span style="width:50%;float: left;">Your Total Amount $</span>
-											 <input  id = "total" type="text" name="amount" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
+											 <input  id = "total" type="number" name="amount" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
+											<input  id = "status" type="text" name="status" style="visibility:hidden" value="placed">
 										</div>
 										<div style="width:30%;float:right;margin-right:20%;">
-											<center><button style = "width:80%;padding:10px;background-color:black;color:#0aac8e;font-weight:bold;font-size:16px;border-radius: 12px;border: 2px solid white;" id="submit">Checkout</center>
+											<center><button style = "width:80%;padding:10px;background-color:black;color:#0aac8e;font-weight:bold;font-size:16px;border-radius: 12px;border: 2px solid white;"id="submit">Checkout</center>
 										</div>
 									</label>
 								</form>
