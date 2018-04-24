@@ -21,7 +21,8 @@ func InitRoutes() *negroni.Negroni {
     router := mux.NewRouter()
 
     router.HandleFunc("/", handlers.HealthCheckHandler)
-    router.HandleFunc("/login", handlers.LoginHandler)
+    router.HandleFunc("/signin", handlers.SigninPostHandler).Methods("POST")
+    router.HandleFunc("/signin", handlers.SigninGetHandler).Methods("GET")
     router.HandleFunc("/signup", handlers.SignupHandler)
     router.HandleFunc("/logout", handlers.LogoutHandler)
 

@@ -8,7 +8,7 @@ import (
     "cmpe281/common"
 )
 
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
+func SigninPostHandler(w http.ResponseWriter, r *http.Request) {
     // TODO: Put user authentication in a goroutine so that it won't block
     // allow cross domain AJAX requests
     // set response type to json
@@ -54,4 +54,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     // Send response
     body, _ := json.Marshal(responseBody)
     fmt.Fprintf(w, string(body))
+}
+
+func SigninGetHandler(w http.ResponseWriter, r *http.Request) {
+    w.WriteHeader(http.StatusOK)
+    fmt.Fprintf(w, "")
 }

@@ -46,7 +46,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
         responseBody["msg"] = "Invalid JSON format"
     }
 
-
+    fmt.Println(responseBody["msg"])
     body, _ := json.Marshal(responseBody)
     fmt.Fprintf(w, string(body))
 }

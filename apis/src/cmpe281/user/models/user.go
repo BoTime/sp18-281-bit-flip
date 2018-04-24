@@ -98,7 +98,7 @@ func (u User) CreateUserId(newUser *User) (*uuid.UUID, error) {
     }
 
     // 2. Make sure email is not used
-    log.Println("try to register === ", newUser.Email)
+    log.Println("try to register === ", newUser.Email, "password: ", newUser.Password)
     userFound, err := client.Get(newUser.Email).Result()
     if err != nil && err.Error() != "redis: nil" {
         log.Println("[* | Sign Up] Failed to read from Redis")
