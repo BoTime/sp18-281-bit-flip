@@ -11,6 +11,7 @@ import (
 	"github.com/scylladb/gocqlx"
 	"github.com/scylladb/gocqlx/qb"
 	"cmpe281/common/output"
+	"cmpe281/common/parse"
 	"cmpe281/common"
 	"log"
 	"net/http"
@@ -40,12 +41,7 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "run server in debug mode")
 	flag.Parse()
 
-	dbhostsparsed := strings.Split(dbhosts, ",")
-	for i := 0; i < len(dbhostsparsed); i++ {
-		dbhostsparsed[i] = strings.TrimSpace(dbhostsparsed[i])
-	}
-
-	cluster := gocql.NewCluster(parseDatabaseHosts(dbhosts)...)
+	cluster := gocql.NewCluster(parse.SplitCommaSeparated(dbhosts)...)
 	cluster.Keyspace = dbkeyspace
 	cluster.Timeout = 5 * time.Second
 	cluster.Authenticator = gocql.PasswordAuthenticator{
@@ -132,16 +128,6 @@ func main() {
 	srv.Shutdown(ctx)
 	log.Println("Server shut down successfully")
 	os.Exit(0)
-}
-
-// Takes a string of comma separated database hosts and
-// returns them as an array of database hosts
-func parseDatabaseHosts(hosts string) []string {
-	parsedhosts := strings.Split(hosts, ",")
-	for i := 0; i < len(parsedhosts); i++ {
-		parsedhosts[i] = strings.TrimSpace(parsedhosts[i])
-	}
-	return parsedhosts
 }
 
 type Server struct {
