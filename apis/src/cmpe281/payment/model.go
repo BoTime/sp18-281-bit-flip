@@ -8,7 +8,7 @@ import (
 type PaymentDetails struct {
 	UserId         gocql.UUID     `json:"-" cql:"user_id"`
 	PaymentId      gocql.UUID     `json:"payment_id" cql:"payment_id"`
-	Amount         float64        `json:"amount" cql:"amount"`
+	Amount         string         `json:"amount" cql:"amount"`
 	Status         string         `json:"status" cql:"status"`
 	CardDetails    CardDetails    `json:"card_details" cql:"card_details"`
 	BillingDetails BillingDetails `json:"billing_details" cql:"billing_details"`
