@@ -44,5 +44,4 @@ do
   esac
 done
 
-export GOPATH=$(pwd)
 docker build -t "$USERNAME/$CONTAINER:$TAG" --file "$DOCKERFILE" .
