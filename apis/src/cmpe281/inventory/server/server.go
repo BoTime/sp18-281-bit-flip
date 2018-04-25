@@ -1,6 +1,8 @@
 package server
 
 import (
+	"cmpe281/common/output"
+	"cmpe281/inventory/handler"
 	"context"
 	"fmt"
 	"github.com/gocql/gocql"
@@ -23,24 +25,75 @@ type Config struct {
 }
 
 func (srv *Server) Run(config Config) {
-	router := mux.NewRouter()
+	rootRouter := mux.NewRouter()
+
+	handlerContext := handler.RequestContext{
+		Cassandra: srv.Cassandra,
+	}
 
 	// Health Check Handler
-	router.HandleFunc("/index.html", func(w http.ResponseWriter, r *http.Request) {
+	rootRouter.HandleFunc("/index.html", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, "OK")
 		return
 	})
 
 	// Set up API Handlers
-	// TODO(bbamsch): Implement API Handlers
+	{
+		rootRouter.HandleFunc("/stores", func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case "GET":
+				handlerContext.ListStores(w, r)
+			default:
+				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
+			}
+		})
+		rootRouter.HandleFunc("/stores/{store_id}", func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case "GET":
+				handlerContext.GetStore(w, r)
+			default:
+				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
+			}
+		})
+		rootRouter.HandleFunc("/stores/{store_id}/inventory", func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case "GET":
+				handlerContext.GetInventory(w, r)
+			default:
+				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
+			}
+		})
+		rootRouter.HandleFunc("/stores/{store_id}/allocations", func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case "GET":
+				handlerContext.ListAllocations(w, r)
+			case "POST":
+				handlerContext.CreateAllocation(w, r)
+			default:
+				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
+			}
+		})
+		rootRouter.HandleFunc("/stores/{store_id}/allocations/{allocation_id}", func(w http.ResponseWriter, r *http.Request) {
+			switch r.Method {
+			case "GET":
+				handlerContext.GetAllocation(w, r)
+			case "POST":
+				handlerContext.ConfirmAllocation(w, r)
+			case "DELETE":
+				handlerContext.DeleteAllocation(w, r)
+			default:
+				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
+			}
+		})
+	}
 
 	httpSrv := &http.Server{
 		Addr:         fmt.Sprintf("%s:%s", config.Ip, config.Port),
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
-		Handler:      router, // Pass our instance of gorilla/mux in.
+		Handler:      rootRouter, // Pass our instance of gorilla/mux in.
 	}
 
 	// Run our server in a goroutine so that it doesn't block.
