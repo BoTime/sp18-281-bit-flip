@@ -11,28 +11,31 @@ router.post('/', proxy("http://localhost:3000",{
 			return require('url').parse(req.url).path + 'order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
+			console.log(proxyResData.toString('utf8'));
 		    data = JSON.parse(proxyResData.toString('utf8'));
 		   	console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200) {
+				console.log("200");
 				// Order updated sucessfully
 				userRes.statusCode = 200;
-				userRes.setHeader('Location', '/order');
+				userRes.redirect('order');	
 
 			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400) {
-				// Login failed, redirect to signin page
+				// Order placing failed, redirect to signin page
+				console.log("400");
 				userRes.statusCode = 302;
 				userRes.setHeader('Location', '/signin');
-			}
-		    return JSON.stringify(data);
+			}else {
+				// Order placing failed, redirect to oops page
+				console.log("500");
+				userRes.statusCode = 500;
+				userRes.setHeader('Location', '/oops');
+			}	
+		    return userRes;
 	  	}
 	})
 );
-/*router.post('/', (req, res) => {
-	console.log("ORDER POST");
-	console.log(req.body);
-	
-	res.render('order');
-});*/
+
 // Return order page
 router.get('/', (req, res) => {
 	res.render('order');

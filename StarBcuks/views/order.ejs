@@ -42,6 +42,14 @@
 			$('select:eq(1)', rowdiv).prop('selectedIndex',0);
 			$('select:eq(2)', rowdiv).prop('selectedIndex',0);
 		}
+		function Check() {
+			$('#prod:select', $(this)).each(function(index) {
+				if (this.value === ""){
+					this.attr('disabled', true);
+				}
+			})
+			return true;
+		};
 		function AddRow(){
 
 			current_id = $("#prod > div").length + 1;
@@ -137,13 +145,14 @@
 			<div id='cssmenu' >
 				<ul>
 				   <li class="active"><a href='/'><span>StarBcuks</span></a></li>
+				   <li class="active"><a href='/history'><span>My Orders</span></a></li>
 				</ul>
 			</div>
 			<div class="custom-banner" style="background-color:black">
 				<div class="wrap-col">
 					<div style="padding:20px">
 							<div>
-								<form name="orderform" class="ff" method="post" action="/order"  enctype="text/html">
+								<form name="orderform" class="ff" method="post" action="/order" onsubmit="return Check()" enctype="multipart/form-data"">
 									<label class="row">
 										<div>
 											<div class="wrap-col">
@@ -202,24 +211,24 @@
 										<div>
 											<p>User Details</p>
 											<div">
-												<input type="text" name='payment[billing_details][first_name]]' placeholder="First Name"  style="width:30%;float:left;margin-left:30px;" required>
-												<input type="text" name='payment[billing_details][last_name]]' placeholder="Second Name" style="width:30%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][first_name]" placeholder="First Name"  style="width:30%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][last_name]" placeholder="Second Name" style="width:30%;float:left;margin-left:30px;" required>
 											</div>
 											<br>
 											<div style="clear:both;">
-												<input type="number" name='payment[card_details][number]]' placeholder="Card Number" style="width:30%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
-												<input type="number" name='payment[card_details][exp_month]]' placeholder="Expiry month" style="width:20%;float:left;margin-left:30px;" required min="1" max ="12" >
-												<input type="number" name='payment[card_details][exp_year]]' placeholder="Expiry year" style="width:20%;float:left;margin-left:30px;" required min="2018" max = "2050" )>
-												<input type="number" name='payment[card_details][cvv]]' placeholder="CVV" style="width:20%;float:left;margin-left:30px;" required min="100" max = "999" )>
+												<input type="number" name="payment[card_details][number]" placeholder="Card Number" style="width:30%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
+												<input type="number" name="payment[card_details][exp_month]" placeholder="Expiry month" style="width:20%;float:left;margin-left:30px;" required min="1" max ="12" >
+												<input type="number" name="payment[card_details][exp_year]" placeholder="Expiry year" style="width:20%;float:left;margin-left:30px;" required min="2018" max = "2050" )>
+												<input type="number" name="payment[card_details][cvv]" placeholder="CVV" style="width:20%;float:left;margin-left:30px;" required min="100" max = "999" )>
 											</div>
 											<div style="clear:both;">
-												<input type="text" name='payment[billing_details][line1]]' placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="text" name='payment[billing_details][line2]]' placeholder="Address 2" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][line1]" placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][line2]" placeholder="Address 2" style="width:25%;float:left;margin-left:30px;" required>
 											</div>
 											<div style ="clear:both;">
-												<input type="text" name='payment[billing_details][city]]' placeholder="City" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="text" name='payment[billing_details][state]]' placeholder="State" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="number" name='payment[billing_details][zip_code]]' placeholder="pincode" style="width:25%;float:left;margin-left:30px;" required min ="10000" max = "99999">
+												<input type="text" name="payment[billing_details][city]" placeholder="City" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][state]" placeholder="State" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="number" name="payment[billing_details][zip_code]" placeholder="pincode" style="width:25%;float:left;margin-left:30px;" required min ="10000" max = "99999">
 											</div>	
 										</div>
 										<br>
@@ -228,7 +237,7 @@
 										<br>
 										<div style="display: inline-block;">
 											<span style="width:50%;float: left;">Your Total Amount $</span>
-											 <input  id = "total" type="number" name="amount" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
+											 <input  id = "total" type="text" name="payment[amount]" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
 											<input  id = "status" type="text" name="status" style="visibility:hidden" value="placed">
 										</div>
 										<div style="width:30%;float:right;margin-right:20%;">
