@@ -34,6 +34,12 @@ Do not supply a request body for this method.
 List StarBcuks store inventory.
 
 #### GET /inventory/v1/stores/{store_id}/inventory
+##### URL Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| store_id | uuid | Store Identifier |
+
 ##### Request Headers
 
 None Required.
@@ -42,12 +48,26 @@ None Required.
 
 Do not supply a request body for this method.
 
+##### Response Body
+
+```json
+{
+  "products": [
+    {
+      "id": "ef2d6b8a-58f0-44b0-970c-8ae77c77eee4",
+      "name": "Caramel Macchiato",
+      "quantity": 500,
+      "size": "large"
+    },
+  ]
+}
+```
+
 ### Allocate Store Inventory
 
 Creates an allocation of store inventory for fulfillment of a drink order. Allocations expire one minute after creation unless confirmed during order processing.
 
 #### POST /inventory/v1/stores/{store_id}/allocations
-
 ##### URL Parameters
 
 | Parameter | Type | Description |
