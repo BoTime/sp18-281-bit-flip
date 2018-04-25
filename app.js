@@ -20,7 +20,9 @@ const signupRouter = require('./routes/sign-up');
 const homeRouter = require('./routes/home');
 const indexRouter = require('./routes/index');
 const orderRouter = require('./routes/order');
-
+const ordersRouter = require('./routes/orders');
+const ordersHistory = require('./routes/history');
+const oops = require('./routes/oops');
 // Create the app.
 var app = express();
 app.use(morgan('tiny'));
@@ -54,16 +56,15 @@ const upload = require('multer')();
 app.use(cookieParser());
 app.use(upload.array());
 
-
 app.use('/', indexRouter);
 app.use('/signin', signinRouter);
 app.use('/signup', signupRouter);
 app.use('/logout', (req, res) => res.redirect('/signin'));
 app.use('/home', homeRouter);
 app.use('/order', orderRouter);
-
-
-
+app.use('/orders', ordersRouter);
+app.use('/history', ordersHistory);
+app.use('/oops', oops);
 var port = process.env.PORT || 8000;
 app.listen(port);
 console.log("Listening on port 8000");
