@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ejs = require('ejs');
 var proxy = require('express-http-proxy');
-
+const goAPI =  process.env.KONG_URL;
 /**
  * Fxn that returns a JSON stringified version of an object.
  * This fxn uses a custom replacer function to handle circular references
@@ -30,7 +30,7 @@ function JSONStringifyTweeked(object) {
 };
 
 // Delete order pid
-router.delete('/', proxy("http://localhost:3000",{
+router.delete('/', proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDERS DELETE");
 			console.log(req.body);	
@@ -51,8 +51,8 @@ router.delete('/', proxy("http://localhost:3000",{
 	  	}
 	})
 );
-
-router.get('/', proxy("http://localhost:3000",{
+//Get orders of a user
+router.get('/', proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDERS GET");
 			console.log(req.body);	
