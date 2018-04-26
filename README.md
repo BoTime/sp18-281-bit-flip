@@ -40,8 +40,9 @@ Load Balancer URLs:
     - Port: `80`
 - [Payment LB URL](http://payments-lb-853644621.us-west-1.elb.amazonaws.com/)
     - Port: `80`
-- [Inventory LB URL](some-link)
-    - port: `unknown`
+- [Inventory LB URL](
+http://inventory-lb-1305987865.us-west-1.elb.amazonaws.com/)
+    - port: `80`
 - [Order LB URL](http://orderLB-2141712569.us-west-1.elb.amazonaws.com/)
     - port: `80`
 
