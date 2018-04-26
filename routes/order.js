@@ -2,9 +2,9 @@ var express = require('express');
 var router = express.Router();
 var ejs = require('ejs');
 var proxy = require('express-http-proxy');
-
+const goAPI =  process.env.KONG_URL;
 // Return order page
-router.post('/', proxy("http://localhost:3000",{
+router.post('/', proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDER POST");
 			console.log(req.body);	
