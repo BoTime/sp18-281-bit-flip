@@ -115,11 +115,14 @@
 			console.log("input yr",inputYr);
 			var inputmnth = $(parentdiv).find('input.month').val();
 			console.log("input mnth",inputmnth);
-			if( inputmnth != "" && (inputmnth > 12 || inputmnth < 1 ) ){
+			if( inputmnth != "" && (parseInt(inputmnth) > 12 || parseInt(inputmnth) < 1 ) ){
 					$(element).val("");
 					alert("Incorrect Month");
 			}
-			if(( inputYr != "" && inputYr < year) || (inputYr===year && inputYr != "" && inputmnth <= month && inputmnth!= "")){
+			console.log("inputYr === year",parseInt(inputYr) === parseInt(year));
+			console.log("inputYr != ''",inputYr!= "");
+			console.log("inputmnth <= month",parseInt(inputmnth) <= parseInt(month));
+			if(( inputYr != "" && parseInt(inputYr) < parseInt(year)) || (parseInt(inputYr) === parseInt(year) && inputYr != "" && parseInt(inputmnth) <= parseInt(month) && inputmnth!= "")){
 					console.log("in moy = 0");
 					console.log("inputmnth <= month",inputmnth <= month);
 					console.log("inputYr != ''",inputYr!= "");
