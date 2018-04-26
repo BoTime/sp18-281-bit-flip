@@ -28,7 +28,7 @@ CREATE TABLE starbucks.payments (
     payment_id timeuuid,
     billing_details frozen<billing_details>,
     card_details frozen<card_details>,
-    amount double,
+    amount text,
     status text,
     PRIMARY KEY (user_id, payment_id)
 ) WITH CLUSTERING ORDER BY (payment_id ASC)
@@ -46,6 +46,3 @@ CREATE TABLE starbucks.payments (
     AND min_index_interval = 128
     AND read_repair_chance = 0.0
     AND speculative_retry = '99PERCENTILE';
-
-# Create Index for Payment ID lookups
-CREATE INDEX payments_id_idx ON starbucks.payments (payment_id);

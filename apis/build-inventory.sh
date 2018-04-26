@@ -1,9 +1,9 @@
 #!/bin/bash
 
 USERNAME="bbamsch"
-CONTAINER="cmpe281-payment"
+CONTAINER="cmpe281-inventory"
 TAG="latest"
-DOCKERFILE="Dockerfile-Payments"
+DOCKERFILE="Dockerfile-Inventory"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -44,4 +44,5 @@ do
   esac
 done
 
+export GOPATH=$(pwd)
 docker build -t "$USERNAME/$CONTAINER:$TAG" --file "$DOCKERFILE" .

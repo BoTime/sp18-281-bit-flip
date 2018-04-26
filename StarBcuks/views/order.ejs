@@ -34,7 +34,7 @@
 			ResetRow();
 			doCal();
 		});
-		var current_id = 0;
+		var current_id = 0; //To allow count number of rows created
 		function ResetRow(){
 			console.log("Reset Called");
 			var rowdiv = $("#row1");
@@ -42,6 +42,7 @@
 			$('select:eq(1)', rowdiv).prop('selectedIndex',0);
 			$('select:eq(2)', rowdiv).prop('selectedIndex',0);
 		}
+		//Dynamically add row for items
 		function AddRow(){
 
 			current_id = $("#prod > div").length + 1;
@@ -59,6 +60,7 @@
 			newdiv.appendTo($("#prod"));
 			doCal();
 		}
+		//To recalculate total amount
 		function doCal(){
 			console.log("docal");
 			var total = 0;
@@ -70,6 +72,7 @@
 			console.log(total);
 			$("#total").val(total);
 		}
+		//To update amount of each row of item 
 		function updateAmount(element){
 			console.log("UpdateAmount");
 			var rowdiv =$(element).parent();
@@ -86,6 +89,7 @@
 			}
 			doCal();
 		};
+		//To dynamically allow deletion of an item except first
 		function DeleteRow(element){
 			console.log("DeleteRow");
 			var rowid =$(element).attr('class');
@@ -97,35 +101,37 @@
 			doCal();
 		};
 
-		<!--To check if a given month or year is valid for the card, moy=1 for year, moy = 0 for month-->
-		function CheckDate(element,moy ){
+		//To check if a given month or year is valid for the card, moy=1 for year, moy = 0 for month
+		function CheckDate(element){
 			console.log("CheckDate");
 			var today = new Date();
 			console.log(today);
 			var month = today.getMonth()+1; // Returns 9
 			var year = today.getFullYear(); // Returns 2017
-			console.log(year);
-			console.log(month);
-			var inputYr = $(element).val();
-			console.log(inputYr);
-			var inputmnth = $(element).val();
-			console.log(inputmnth);
-			if (moy){
-				if((inputYr<year && inputYr!= "")|| (inputYr==year && inputmnth!= "" && inputmnth<=month)){
-					console.log("in moy = 1");
+			console.log("current yr",year);
+			console.log("current mnth",month);
+			var parentdiv =$(element).parent();
+			var inputYr = $(parentdiv).find('input.year').val();
+			console.log("input yr",inputYr);
+			var inputmnth = $(parentdiv).find('input.month').val();
+			console.log("input mnth",inputmnth);
+			if( inputmnth != "" && (parseInt(inputmnth) > 12 || parseInt(inputmnth) < 1 ) ){
 					$(element).val("");
-					alert("The card is expired, check expiry date");
-				}
+					alert("Incorrect Month");
 			}
-			else{
-				if(inputYr<year || (inputYr==year && inputYr!= "" && inputmnth<=month)){
+			console.log("inputYr === year",parseInt(inputYr) === parseInt(year));
+			console.log("inputYr != ''",inputYr!= "");
+			console.log("inputmnth <= month",parseInt(inputmnth) <= parseInt(month));
+			if(( inputYr != "" && parseInt(inputYr) < parseInt(year)) || (parseInt(inputYr) === parseInt(year) && inputYr != "" && parseInt(inputmnth) <= parseInt(month) && inputmnth!= "")){
 					console.log("in moy = 0");
-					$(element).val("");
+					console.log("inputmnth <= month",inputmnth <= month);
+					console.log("inputYr != ''",inputYr!= "");
+					$(parentdiv).find('input.month').val("");
+					$(parentdiv).find('input.year').val("");
 					alert("The card is expired, check expiry date");
-				}
 			}
-		};
-		
+			
+		};		
 	</script>
 
 </head>
@@ -137,13 +143,14 @@
 			<div id='cssmenu' >
 				<ul>
 				   <li class="active"><a href='/'><span>StarBcuks</span></a></li>
+				   <li class="active"><a href='/history'><span>My Orders</span></a></li>
 				</ul>
 			</div>
 			<div class="custom-banner" style="background-color:black">
 				<div class="wrap-col">
 					<div style="padding:20px">
 							<div>
-								<form name="orderform" class="ff" method="post" action="/order"  enctype="text/html">
+								<form name="orderform" class="ff" method="post" action="/order" enctype="multipart/form-data"">
 									<label class="row">
 										<div>
 											<div class="wrap-col">
@@ -202,24 +209,24 @@
 										<div>
 											<p>User Details</p>
 											<div">
-												<input type="text" name='payment[billing_details][first_name]]' placeholder="First Name"  style="width:30%;float:left;margin-left:30px;" required>
-												<input type="text" name='payment[billing_details][last_name]]' placeholder="Second Name" style="width:30%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][first_name]" placeholder="First Name"  style="width:30%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][last_name]" placeholder="Second Name" style="width:30%;float:left;margin-left:30px;" required>
 											</div>
 											<br>
 											<div style="clear:both;">
-												<input type="number" name='payment[card_details][number]]' placeholder="Card Number" style="width:30%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
-												<input type="number" name='payment[card_details][exp_month]]' placeholder="Expiry month" style="width:20%;float:left;margin-left:30px;" required min="1" max ="12" >
-												<input type="number" name='payment[card_details][exp_year]]' placeholder="Expiry year" style="width:20%;float:left;margin-left:30px;" required min="2018" max = "2050" )>
-												<input type="number" name='payment[card_details][cvv]]' placeholder="CVV" style="width:20%;float:left;margin-left:30px;" required min="100" max = "999" )>
+												<input type="number" name="payment[card_details][number]" placeholder="Card Number" style="width:30%;float:left;margin-left:30px;"required min="1000000000000000" max="9999999999999999">
+												<input type="number" class= "month" name="payment[card_details][exp_month]" placeholder="Expiry month" style="width:20%;float:left;margin-left:30px;" required min="1" max ="12" onchange = "CheckDate(this)">
+												<input type="number" class = "year" name="payment[card_details][exp_year]" placeholder="Expiry year" style="width:20%;float:left;margin-left:30px;" required min="2018" max = "2050" onchange = "CheckDate(this)">
+												<input type="number" name="payment[card_details][cvv]" placeholder="CVV" style="width:20%;float:left;margin-left:30px;" required min="100" max = "999" )>
 											</div>
 											<div style="clear:both;">
-												<input type="text" name='payment[billing_details][line1]]' placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="text" name='payment[billing_details][line2]]' placeholder="Address 2" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][line1]" placeholder="Address 1" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][line2]" placeholder="Address 2" style="width:25%;float:left;margin-left:30px;" required>
 											</div>
 											<div style ="clear:both;">
-												<input type="text" name='payment[billing_details][city]]' placeholder="City" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="text" name='payment[billing_details][state]]' placeholder="State" style="width:25%;float:left;margin-left:30px;" required>
-												<input type="number" name='payment[billing_details][zip_code]]' placeholder="pincode" style="width:25%;float:left;margin-left:30px;" required min ="10000" max = "99999">
+												<input type="text" name="payment[billing_details][city]" placeholder="City" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="text" name="payment[billing_details][state]" placeholder="State" style="width:25%;float:left;margin-left:30px;" required>
+												<input type="number" name="payment[billing_details][zip_code]" placeholder="pincode" style="width:25%;float:left;margin-left:30px;" required min ="10000" max = "99999">
 											</div>	
 										</div>
 										<br>
@@ -228,7 +235,7 @@
 										<br>
 										<div style="display: inline-block;">
 											<span style="width:50%;float: left;">Your Total Amount $</span>
-											 <input  id = "total" type="number" name="amount" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
+											 <input  id = "total" type="text" name="payment[amount]" style="width:30%;float: left;padding:10px;border-radius: 12px;font-weight:bold;font-size:16px;text-align: center;" readonly value = "5">
 											<input  id = "status" type="text" name="status" style="visibility:hidden" value="placed">
 										</div>
 										<div style="width:30%;float:right;margin-right:20%;">

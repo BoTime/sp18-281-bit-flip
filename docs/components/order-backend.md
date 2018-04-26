@@ -3,6 +3,39 @@
 Starbcuks Order backend is responsible for accepting Starbcuks drink orders as placed by the customer. An order consists of both the items being ordered as well as payment details which are forwarded to the Payment service for processing for approval or decline.
 
 ## API Reference
+
+### Ping without Auth token
+
+#### GET /orders/v1/
+##### Request Headers
+
+No header
+
+##### Request Body
+
+No body needed
+
+##### Response Body
+
+"API ORDER ALIVE!"  -Success
+
+### Ping with Auth token
+
+#### GET /orders/v1/order
+##### Request Headers
+
+| Header | Description |
+|--------|-------------|
+| Authorization | User Credential for Authorization Verification |
+
+##### Request Body
+
+No body needed
+
+##### Response Body
+"Authenticated"  -Success for valid Token
+"Bad Authentication" -Failure for invalid Token
+
 ### Create Order
 
 Create a Starbcuks drink order.
@@ -17,29 +50,34 @@ Create a Starbcuks drink order.
 ##### Request Body
 
 ```json
-{
-"store": "store1",
+{ "store": "store2",
   "product":
-   [ { "item": "Cappuccino", "qty": "1", "size": "small" },
-     { "item": "Expresso Machiato", "qty": "2", "size": "medium" },
-     { "item": "Lemon Tea", "qty": "1", "size": "large" } ],
-"first": "aa",
-"second": "vv",
-"card": "1111111111111111",
-"exp_month": "9",
-"exp_yr": "2018",
-"add1": "hh",
-"add2": "hhh",
-"city": "hh",
-"state": "hh",
-"pin": "11111",
-"amount": "27"
-}
+   [ 
+     { "item": "Cafe Americano", "qty": "2", "size": "medium" },
+     { "item": "English Spice Tea", "qty": "3", "size": "large" } ],
+   "payment":
+    { "billing_details":
+	   { "first_name": "vimmi",
+		 "last_name": "swami",
+		 "line1": "sanjose",
+		 "line2": "vbnm",
+		 "city": "vb n",
+		 "state": "vb nm",
+		 "zip_code": "52366" },
+	  "card_details":
+	   { "number": "1111111111111111",
+		 "exp_month": "08",
+		 "exp_year": "2018",
+		 "cvv": "111" },
+	  "amount": "49" 
+	}
+} 
 ```
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `items[]` | [Drink\[\]](#Drink-Resource) | List of drink items for the order. |
+| `store` | ("store1", "store2") as string | The store identifier for location of purchase |
+| `product` | [Product] (#Order Resource) | List of drink items, quantity and size for the order. |
 | `payment` | [Payment](#Payment-Resource) | Payment details for the order. |
 
 ### List Orders
@@ -59,79 +97,79 @@ Do not supply a request body for this method.
 
 ##### Response Body
 
-```json
-{
-  "orders": [
-    order Resource
-  ]
-}
+```jsonString
+"[
+	{
+		\"pay_id\":\"06da992b-485f-11e8-93bb-204747ddadd5\",
+		\"status\":\"processed\",
+		\"store\":\"store1\",
+		\"product\":[
+						{\"item\":\"Cappuccino\",\"qty\":\"1\",\"size\":\"small\"},
+						{\"item\":\"Cappuccino\",\"qty\":\"5\",\"size\":\"small\"}
+					]
+		},
+	{
+		\"pay_id\":\"3b0b9639-485f-11e8-93bc-204747ddadd5\",
+		\"status\":\"processed\",
+		\"store\":\"store2\",
+		\"product\":[
+						{\"item\":\"Cafe Americano\",\"qty\":\"1\",\"size\":\"medium\"},
+						{\"item\":\"Caffe Late\",\"qty\":\"1\",\"size\":\"small\"}
+					]
+	}
+]"
 ```
 
-### Get Order
-#### GET /orders/v1/orders/{orderid}
-##### Request Headers
-
-| Header | Description |
-|--------|-------------|
-| Authorization | User Credential for Authorization Verification |
-
-Retrieve details for a Starbcuks drink order.
-
-##### Request Body
-
-Do not supply a request body for this method.
-
-##### Response Body
-
-Returns an [Order Resource](#Order-Resource)
-
 ### Update Order
-#### PATCH /orders/v1/orders/{orderid}
+#### PATCH /orders/v1/order
 
-Not Supported
+Not Supported, internally handled by Go routine
 
 ### Delete Order
-#### DELETE /orders/v1/orders/{orderid}
+#### DELETE /orders/v1/order
 
-Not Supported
+{ "pid": "e5440db4-468d-11e8-84b1-204747ddadd5"}
+
+As the userId will be decoded from Auth token.
 
 #### Resources
 ##### Order Resource
 ```json
-{
-  "items": [
-    {
-      "product": "string",
-      "size": "string",
-      "decaf": "boolean"
-    }
-  ],
-  "payment": {
-    "card": {
-      "number": "string",
-      "ccv": "string"
-    },
-    "billing": {
-      "firstname": "string",
-      "lastname": "string",
-      "line1": "string",
-      "line2": "string",
-      "city": "string",
-      "state": "string",
-      "zipcode": "string"
-    }
-  }
-}
+{ "store": "store2",
+  "product":
+   [ 
+     { "item": "Cafe Americano", "qty": "2", "size": "medium" },
+     { "item": "English Spice Tea", "qty": "3", "size": "large" } ],
+   "payment":
+    { "billing_details":
+	   { "first_name": "vimmi",
+		 "last_name": "swami",
+		 "line1": "sanjose",
+		 "line2": "vbnm",
+		 "city": "vb n",
+		 "state": "vb nm",
+		 "zip_code": "52366" },
+	  "card_details":
+	   { "number": "1111111111111111",
+		 "exp_month": "08",
+		 "exp_year": "2018",
+		 "cvv": "111" },
+	  "amount": "49" 
+	}
+} 
 
 ```
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `items[].product` | string | Name of the drink being ordered. |
-| `items[].size` | string | Size of drink. Choose from: `short`, `tall`, `grande`, `venti`. |
-| `items[].decaf` | string | Decaffinated drink. |
-| `payment.card.number` | string | Credit or Debit Card Number. |
-| `payment.card.ccv` | string | Credit or Debit Security Code. |
+| `store` | string | Identifier of the store location of purchase. |
+| `product[].item` | string | Name of the drink being ordered. |
+| `product[].size` | string | Size of drink. Choose from: `short`, `tall`, `grande`, `venti`. |
+| `product[].qty` | string | Amount ordered. |
+| `payment.card.number` | string | Credit or Debit Card Number 11digit. |
+| `payment.card.ccv` | string | Credit or Debit Security Code 3 digit. |
+| `payment.card.exp_month` | string | Credit or Debit expiry month 1-12. |
+| `payment.card.exp_year` | string | Credit or Debit expiry year max 20+ yr. |
 | `payment.billing.firstname` | string | Customer Billing First Name. |
 | `payment.billing.lastname` | string | Customer Billing Last Name. |
 | `payment.billing.line1` | string | Customer Billing Line 1. |
@@ -139,35 +177,84 @@ Not Supported
 | `payment.billing.city` | string | Customer Billing City. |
 | `payment.billing.state` | string | Customer Billing State. |
 | `payment.billing.zipcode` | string | Customer Billing Zip Code. |
-
+| `payment.amount` | string | Customer Billing Amount. |
 ##### Payment Resource
-TODO(bbamsch): Move this to the Payment Service Design Document
+##### Request Body
+
 ```json
 {
-  "card": {
-    "number": "string",
-    "ccv": "string"
+  "amount": "10",
+  "billing_details": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "line1": "One Washington Square",
+    "line2": "",
+    "city": "San Jose",
+    "state": "CA",
+    "zip_code": "95192"
   },
-  "billing": {
-    "firstname": "string",
-    "lastname": "string",
-    "line1": "string",
-    "line2": "string",
-    "city": "string",
-    "state": "string",
-    "zipcode": "string"
+  "card_details": {
+    "number": "4111111111111111",
+    "cvv": "111",
+    "exp_month": "04",
+    "exp_year": "2018"
   }
 }
 ```
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `card.number` | string | Credit or Debit Card Number. |
-| `card.ccv` | string | Credit or Debit Security Code. |
-| `billing.firstname` | string | Customer Billing First Name. |
-| `billing.lastname` | string | Customer Billing Last Name. |
-| `billing.line1` | string | Customer Billing Line 1. |
-| `billing.line2` | string | Customer Billing Line 2. |
-| `billing.city` | string | Customer Billing City. |
-| `billing.state` | string | Customer Billing State. |
-| `billing.zipcode` | string | Customer Billing Zip Code. |
+| `amount` | float | Payment Amount. |
+| `billing_details.first_name` | string | Customer Billing First Name. |
+| `billing_details.last_name` | string | Customer Billing Last Name. |
+| `billing_details.line1` | string | Customer Billing Address Line 1. |
+| `billing_details.line2` | string | Customer Billing Address Line 2. |
+| `billing_details.city` | string | Customer Billing City. |
+| `billing_details.state` | string | Customer Billing State. |
+| `billing_details.zip_code` | string | Customer Billing Zip Code. |
+| `card_details.number` | string | Customer Payment Card Number. |
+| `card_details.cvv` | string | Customer Payment Card CVV -- Not Stored. |
+| `card_details.exp_month` | string | Customer Payment Card Expiration Month. |
+| `card_details.exp_year` | string | Customer Payment Card Expiration Year. |
+
+##### Response Body
+
+```json
+{
+  "amount": 10.00,
+  "billing_details": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "line1": "One Washington Square",
+    "line2": "",
+    "city": "San Jose",
+    "state": "CA",
+    "zip_code": "95192"
+  },
+  "card_details": {
+    "number": "4111111111111111",
+    "cvv": "111",
+    "exp_month": "04",
+    "exp_year": "2018"
+  },
+  "payment_id": "52a1972c-4451-11e8-842f-0ed5f89f718b",
+  "status": "Approved",
+}
+```
+
+| Property Name | Type | Description |
+|---------------|------|-------------|
+| `amount` | string | Payment Amount. |
+| `billing_details.first_name` | string | Customer Billing First Name. |
+| `billing_details.last_name` | string | Customer Billing Last Name. |
+| `billing_details.line1` | string | Customer Billing Address Line 1. |
+| `billing_details.line2` | string | Customer Billing Address Line 2. |
+| `billing_details.city` | string | Customer Billing City. |
+| `billing_details.state` | string | Customer Billing State. |
+| `billing_details.zip_code` | string | Customer Billing Zip Code. |
+| `card_details.number` | string | Customer Payment Card Number. |
+| `card_details.cvv` | string | Customer Payment Card CVV -- Not Stored. |
+| `card_details.exp_month` | string | Customer Payment Card Expiration Month. |
+| `card_details.exp_year` | string | Customer Payment Card Expiration Year. |
+| `payment_id` | string | Payment Identifier. |
+| `status` | string | Payment Status. |
