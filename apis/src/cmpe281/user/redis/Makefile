@@ -3,16 +3,25 @@ build-master:
 	docker build -t redis:master -f Dockerfile-master .
 run-master:
 	docker run --name redis-master \
+	--network host \
+	-d redis:master
+	sleep 1 \
+	-p 6379:6379 \
+	-p 16379:16379 \
+	docker ps -a
+	redis-cli ping
+run-master-bk:
+	docker run --name redis-master \
 	--net=bridge \
 	-p 6379:6379 \
-	-p 26379:26379 \
+	-p 16379:16379 \
 	-d redis:master
 	sleep 1
-	docker ps -a
+	redis-cli ping
 remove-master:
 	docker stop redis-master
 	docker rm redis-master
-restart-master: remove-master build-master run-master
+restart-master: remove-master build-master run-master-bk
 
 log-master:
 	docker logs redis-master
@@ -25,8 +34,14 @@ build-slave:
 run-slave:
 	docker run --name redis-slave \
 	--net=host \
+	-d redis:slave
+	sleep 1
+	docker ps -a
+run-slave-bk:
+	docker run --name redis-slave \
+	--net=host \
 	-p 6380:6380 \
-	-p 26380:26380 \
+	-p 16380:16380 \
 	-d redis:slave
 	sleep 1
 	docker ps -a
