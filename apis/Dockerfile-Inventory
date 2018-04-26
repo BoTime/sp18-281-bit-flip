@@ -1,0 +1,11 @@
+FROM golang:latest
+EXPOSE 80
+RUN mkdir /app
+ADD ./src/cmpe281 /app/src/cmpe281
+ENV GOPATH /app
+WORKDIR /app/
+RUN (cd src/cmpe281/inventory; go get; go build)
+ENV IP 0.0.0.0
+ENV PORT 80
+ENV DEBUG false
+CMD ["sh", "-c", "/app/bin/inventory --dbuser=$DBUSER --dbpass=$DBPASS --ip=$IP --port=$PORT --debug=$DEBUG"]
