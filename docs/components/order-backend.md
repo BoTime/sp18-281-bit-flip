@@ -77,7 +77,7 @@ Create a Starbcuks drink order.
 | Property Name | Type | Description |
 |---------------|------|-------------|
 | `store` | ("store1", "store2") as string | The store identifier for location of purchase |
-| `product` | [Product] (#Order Resource) | List of drink items, quantity and size for the order. |
+| `product` | [Order](#Order Resource) | List of drink items, quantity and size for the order. |
 | `payment` | [Payment](#Payment-Resource) | Payment details for the order. |
 
 ### List Orders
