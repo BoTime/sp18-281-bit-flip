@@ -8,11 +8,14 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 
 ## API Reference
-
+- [Base Url](#Base-Url)
 - [Login](#login)
 - [Signup](#signup)
 - [Logout](#logout)
 - [Get User](#get-user)
+
+### Base Url
+`kong`: http://kong-lb-133222058.us-west-1.elb.amazonaws.com/users/v1/
 
 ### Login
 
@@ -143,7 +146,7 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 ### Get User
 
-#### POST /users/v1/user/{user_id}
+#### GET /users/v1/user/{user_id}
 ##### Request Headers
 `Header`
 
@@ -169,10 +172,52 @@ Starbuck User backend is responsible for user authentication and registration. J
 
 ```json
 {
-    "url": "http://team-bit-flip-fake-url/users/v1/user/{user_id}",
+    "url": "http://kong-lb-133222058.us-west-1.elb.amazonaws.com/users/v1/{user_id}",
     "email": string,
     "firstname": string,
-    "lastname": string
+    "lastname": string,
+    "user_id": string
+}
+```
+
+---
+
+### Update User
+
+#### PATCH /users/v1/user/{user_id}
+##### Request Headers
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| Authorization | jwt token-content |
+
+`Body`
+
+```json
+{
+    "password": string
+}
+```
+
+##### Response
+`Status: 200 Ok`
+
+`Header`
+
+| Header | Description |
+|--------|-------------|
+| Authorization | jwt token-content |
+
+`Body`
+
+```json
+{
+    "url": "http://kong-lb-133222058.us-west-1.elb.amazonaws.com/users/v1/{user_id}",
+    "email": string,
+    "firstname": string,
+    "lastname": string,
+    "user_id": string
 }
 ```
 

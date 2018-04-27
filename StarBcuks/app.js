@@ -2,6 +2,8 @@
 // Load environment variables
 require('dotenv').config()
 
+console.log('[*] KONG URL: ' + process.env.KONG_URL);
+
 const bodyParser = require('body-parser');
 const express = require('express');
 var session = require('express-session');
