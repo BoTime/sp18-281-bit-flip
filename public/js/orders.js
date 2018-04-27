@@ -66,6 +66,15 @@
 				$("#showData").append(table);
 				console.log("Appended", i, table);
 			}        
-		}});
+		},
+		complete: function(xhr, textStatus) {
+			console.log(xhr.status);
+			if (xhr.status === 400 || xhr.status === 401 || xhr.status === 404 ){
+				window.location="http://"+$(location).attr('host')+"/signin";
+			}else{
+				window.location="http://"+$(location).attr('host')+"/oops";
+			}	
+		} 
+	});
 		
     }
