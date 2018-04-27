@@ -7,7 +7,16 @@ const KONG_API_GATEWAY_URL = process.env.KONG_URL;
 
 router.post('/', proxy(KONG_API_GATEWAY_URL,{
 		proxyReqPathResolver: function(req) {
-			return require('url').parse(req.url).path + 'signup';
+			let newUrl = '';
+			if (KONG_API_GATEWAY_URL.indexOf('localhost') !== -1) {
+				// request through local server
+				newUrl = require('url').parse(req.url).path + 'signup';
+			} else {
+				// request through Kong API Gateway
+				newUrl = require('url').parse(req.url).path + 'users/v1/signup';
+			}
+			console.log('=====', newUrl)
+			return newUrl;
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
 			data = JSON.parse(proxyResData.toString('utf8'));
