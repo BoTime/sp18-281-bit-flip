@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Database Models
 type StoreDetails struct {
 	Id   gocql.UUID `json:"id" cql:"id"`
 	Name string     `json:"name" cql:"name"`
@@ -22,4 +23,10 @@ type AllocationDetails struct {
 	Id      gocql.UUID `json:"id" cql:"id"`
 	Status  string     `json:"status" cql:"status"`
 	Expires time.Time  `json:"expires" cql:"expires"`
+}
+
+// API Models
+type ListStoresResult struct {
+	Stores        []StoreDetails `json:"stores"`
+	NextPageToken *gocql.UUID    `json:"next_page_token"`
 }
