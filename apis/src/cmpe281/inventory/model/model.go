@@ -30,3 +30,7 @@ type ListStoresResult struct {
 	Stores        []StoreDetails `json:"stores"`
 	NextPageToken *gocql.UUID    `json:"next_page_token"`
 }
+
+type ListProductsResult struct {
+	Products []ProductDetails `json:"products"`
+}

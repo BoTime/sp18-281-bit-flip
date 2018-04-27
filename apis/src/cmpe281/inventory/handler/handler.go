@@ -4,11 +4,11 @@ import (
 	"cmpe281/common/output"
 	"cmpe281/inventory/model"
 	"github.com/gocql/gocql"
+	"github.com/gorilla/mux"
 	"github.com/scylladb/gocqlx"
 	"github.com/scylladb/gocqlx/qb"
 	"log"
 	"net/http"
-	"github.com/gorilla/mux"
 )
 
 type RequestContext struct {
@@ -77,7 +77,36 @@ func (ctx *RequestContext) GetStore(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctx *RequestContext) GetInventory(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
+	vars := mux.Vars(r)
+
+	querySelectors := qb.M{
+		"store_id": nil,
+	}
+
+	// Parse Query Inputs
+	if storeId, err := gocql.ParseUUID(vars["store_id"]); err == nil {
+		querySelectors["store_id"] = storeId
+	} else {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Store ID not provided")
+		return
+	}
+
+	// Set up Query
+	query, names := qb.Select("products").Where(qb.Eq("store_id")).ToCql()
+	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(querySelectors)
+
+	// Execute Query
+	var products []model.ProductDetails
+	if err := gocqlx.Iter(q.Query).Select(&products); err != nil {
+		log.Println(err)
+		output.WriteErrorMessage(w, http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	// Transform Output to JSON
+	output.WriteJson(w, &model.ListProductsResult{
+		Products: products,
+	})
 }
 
 func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Request) {
