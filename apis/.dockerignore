@@ -1,0 +1,5 @@
+# Ignore local packages
+src/*
+
+# Do not ignore cmpe281 packages
+!src/cmpe281/
