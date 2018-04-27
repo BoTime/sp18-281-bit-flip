@@ -38,6 +38,13 @@ func (srv *Server) Run(config Config) {
 		return
 	})
 
+	// Root API Handler
+	rootRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Starbcuks Inventory API")
+		return
+	})
+
 	// Set up API Handlers
 	{
 		rootRouter.HandleFunc("/stores", func(w http.ResponseWriter, r *http.Request) {
