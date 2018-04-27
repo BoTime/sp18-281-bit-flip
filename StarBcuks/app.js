@@ -25,6 +25,7 @@ const orderRouter = require('./routes/order');
 const ordersRouter = require('./routes/orders');
 const ordersHistory = require('./routes/history');
 const oops = require('./routes/oops');
+const created = require('./routes/created');
 // Create the app.
 var app = express();
 app.use(morgan('tiny'));
@@ -67,6 +68,8 @@ app.use('/order', orderRouter);
 app.use('/orders', ordersRouter);
 app.use('/history', ordersHistory);
 app.use('/oops', oops);
+app.use('/created', created);
+
 var port = process.env.PORT || 8000;
 app.listen(port);
 console.log("Listening on port 8000");
