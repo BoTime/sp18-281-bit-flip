@@ -49,11 +49,11 @@
 | **Attendees** | Brian Bamsch<br>Bo Liu<br>Masi Nazarian<br>Vimmi Swami<br> |
 
 ### Agenda Topics
-1. Discuss Sharding component in project 
-2. Discuss and decide on component level design and implementation 
+1. Discuss Sharding component in project
+2. Discuss and decide on component level design and implementation
 3. Discuss and assign work to team members:
-- Bo : User module 
-- Vimmi : Order module 
+- Bo : User module
+- Vimmi : Order module
 - Masi and Brian : Kong setup and Inventory module
 - Brian : Payment module  
 
@@ -82,10 +82,10 @@
 | **Attendees** | Brian Bamsch<br>Bo Liu<br>Masi Nazarian<br>Vimmi Swami<br> |
 
 ### Agenda Topics
-1. Discuss Authentication of user and its processing 
-2. Discuss Order and payment Interface 
+1. Discuss Authentication of user and its processing
+2. Discuss Order and payment Interface
 3. Discuss TODO items for meeting on 4/21/2018.
- 
+
 
 ## Action Items
 | Items | Person Responsible  | Deadline |
@@ -97,5 +97,22 @@
 - Each bckend server will have sufficient data to decode token to user_id without communicating with User backend.
 - Each Backend server will send auth token id along with its request to other backend APIs while communicating.
 
-
 ---
+
+## Meeting - 04
+
+| LOCATION | Library + Whatsapp Group |
+|:----|:----|
+| **Date** | 2018/04/26 |
+| **Facilitator** | N/A |
+| **Timer** | N/A |
+| **Note Taker** | Bo |
+| **Attendees** | Brian Bamsch<br>Bo Liu<br>Vimmi Swami<br> |
+
+### Agenda Topics
+1. Deploy Orders API to EC2
+2. Update Kong config
+3. Testing Orders and User API
+
+### Decision
+Meeting in person on Sunday morning 9:00 am for integration tests.
