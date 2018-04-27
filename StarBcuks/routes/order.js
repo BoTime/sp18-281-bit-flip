@@ -8,7 +8,7 @@ router.post('/', proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDER POST");
 			console.log(req.body);	
-			return require('url').parse(req.url).path + 'order';
+			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
 			console.log("Back",proxyRes);
@@ -20,7 +20,7 @@ router.post('/', proxy(goAPI,{
 				//userRes.statusCode = 201;
 				userRes.redirect('created');	
 
-			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400) {
+			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
 				// Order placing failed, redirect to signin page
 				console.log("400");
 				userRes.statusCode = 401;
