@@ -3,19 +3,19 @@
 
 FROM redis
 COPY redis-master.conf /usr/local/etc/redis/redis.conf
-COPY sentinel.conf /usr/local/etc/redis/sentinel.conf
+# COPY sentinel.conf /usr/local/etc/redis/sentinel.conf
 RUN chown redis:redis /usr/local/etc/redis/redis.conf
 
-ENV SENTINEL_QUORUM 2
-ENV SENTINEL_DOWN_AFTER 5000
-ENV SENTINEL_FAILOVER 10000
-ENV SENTINEL_PORT 26379
+#ENV SENTINEL_QUORUM 2
+#ENV SENTINEL_DOWN_AFTER 5000
+#ENV SENTINEL_FAILOVER 10000
+#ENV SENTINEL_PORT 26379
 
 CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
-CMD [ "redis-sentinel", "/usr/local/etc/redis/sentinel.conf" ]
+#CMD [ "redis-sentinel", "/usr/local/etc/redis/sentinel.conf" ]
 
 EXPOSE 6379
-EXPOSE 26379
+EXPOSE 16379
 
 ADD entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh

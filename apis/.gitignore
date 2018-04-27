@@ -2,4 +2,5 @@ bin/
 src/*
 !src/cmpe281/
 gopkg.in
+.env
 pkg/

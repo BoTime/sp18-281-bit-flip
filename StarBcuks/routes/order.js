@@ -8,28 +8,28 @@ router.post('/', proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDER POST");
 			console.log(req.body);	
-			return require('url').parse(req.url).path + 'order';
+			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-			console.log(proxyResData.toString('utf8'));
+			console.log("Back",proxyRes);
 		    data = JSON.parse(proxyResData.toString('utf8'));
 		   	console.log('status code====', proxyRes.statusCode);
-			if (proxyRes.statusCode === 200) {
-				console.log("200");
+			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 201) {
+				console.log("Sucess");
 				// Order updated sucessfully
-				userRes.statusCode = 200;
-				userRes.redirect('order');	
+				//userRes.statusCode = 201;
+				userRes.redirect('created');	
 
-			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400) {
+			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
 				// Order placing failed, redirect to signin page
 				console.log("400");
-				userRes.statusCode = 302;
-				userRes.setHeader('Location', '/signin');
+				userRes.statusCode = 401;
+				userRes.redirect('signin');
 			}else {
 				// Order placing failed, redirect to oops page
 				console.log("500");
 				userRes.statusCode = 500;
-				userRes.setHeader('Location', '/oops');
+				userRes.redirect('oops');
 			}	
 		    return userRes;
 	  	}
@@ -38,6 +38,7 @@ router.post('/', proxy(goAPI,{
 
 // Return order page
 router.get('/', (req, res) => {
+	console.log("order get",req);
 	res.render('order');
 });
 
