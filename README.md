@@ -16,7 +16,7 @@ git subtree push --prefix StarBcuks heroku master
 
 ---
 ### How to do jwt authentication?
-https://github.com/nguyensjsu/team281-bit-flip/blob/master/apis/users/authentication.md
+[authentication.md](https://github.com/nguyensjsu/team281-bit-flip/blob/master/apis/src/cmpe281/user/authentication.md)
 
 ### Architecture Diagram
 ![Architecture](images/stack-architecture-diagram.png?raw=true "Architecture Diagram")
