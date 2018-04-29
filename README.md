@@ -4,7 +4,7 @@
 
 Frontend Node.js app is deployed to Heroku (Bo's account) using Git subtree command.
 
-App URL: https://rocky-island-94191.herokuapp.com/
+App URL: https://infinite-atoll-21952.herokuapp.com/
 
 
 ```shell
