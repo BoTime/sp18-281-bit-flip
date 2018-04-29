@@ -1,11 +1,12 @@
-var express = require('express');
-var router = express.Router();
-var proxy = require('express-http-proxy');
+const express = require('express');
+const router = express.Router();
+const proxy = require('express-http-proxy');
+const RequestModifier = require('../utils/RequestModifier');
 
 const KONG_API_GATEWAY_URL = process.env.KONG_URL;
 
 
-router.post('/', proxy(KONG_API_GATEWAY_URL,{
+router.post('/', RequestModifier, proxy(KONG_API_GATEWAY_URL,{
 		proxyReqPathResolver: function(req) {
 			let newUrl = '';
 			if (KONG_API_GATEWAY_URL.indexOf('localhost') !== -1) {
