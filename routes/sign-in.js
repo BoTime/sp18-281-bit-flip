@@ -24,7 +24,7 @@ router.post('/', proxy(KONG_API_GATEWAY_URL,{
 				newUrl = require('url').parse(req.url).path + 'signin';
 			} else {
 				// request through Kong API Gateway
-				newUrl = require('url').parse(req.url).path + 'users/v1/login';
+				newUrl = require('url').parse(req.url).path + 'users/v1/signin';
 			}
 			console.log('=====', newUrl)
 			return newUrl;
