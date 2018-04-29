@@ -22,22 +22,22 @@ git subtree push --prefix StarBcuks heroku master
 ![Architecture](images/stack-architecture-diagram.png?raw=true "Architecture Diagram")
 
 ### Backend Auto scaling
-1. Create an ec2 instance with the go app build executable file
-2. Modify /etc/rc.d/rc.local file in sudo mode to append below sample code(please modify based on your structure)
+1. Create an ec2 instance with the go app build executable file<br>
+2. Modify /etc/rc.d/rc.local file in sudo mode to append below sample code(please modify based on your structure)<br>
 
-echo "Executing user data script........."
+echo "Executing user data script........."<br>
 
-echo "Exporting Path"
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH='/home/ec2-user/cmpe281-vimmis/goapi_orders'
-echo "Running app..."
-./home/ec2-user/cmpe281-vimmis/goapi_orders/src/starbcuks/starbcuks
+echo "Exporting Path"<br>
+export PATH=$PATH:/usr/local/go/bin<br>
+export GOPATH='/home/ec2-user/cmpe281-vimmis/goapi_orders'<br>
+echo "Running app..."<br>
+./home/ec2-user/cmpe281-vimmis/goapi_orders/src/starbcuks/starbcuks<br>
 
-3. Stop and start the ec2 instance to check if system log shows logs base don above
-4. stop the ec2 instance, create an image of it.
-5. Create a template from above image (In netwrk interface: subnet and Security Group (make sure your app port are exposed)should match)
-6. Create Auto scale group based on above and link it with the load balancer.
-7. Check load balancer, instances should registered which are made through ASG.
+3. Stop and start the ec2 instance to check if system log shows logs base don above<br>
+4. stop the ec2 instance, create an image of it.<br>
+5. Create a template from above image (In netwrk interface: subnet and Security Group (make sure your app port are exposed)should match)<br>
+6. Create Auto scale group based on above and link it with the load balancer.<br>
+7. Check load balancer, instances should registered which are made through ASG.<br>
 
 ### Links
 
