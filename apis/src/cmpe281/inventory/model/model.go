@@ -26,7 +26,7 @@ type InventoryDetails struct {
 }
 
 type AllocationDetails struct {
-	UserId   gocql.UUID         `json:"user_id" cql:"user_id"`
+	UserId   gocql.UUID         `json:"-" cql:"user_id"`
 	Id       gocql.UUID         `json:"id" cql:"id"`
 	Status   string             `json:"status" cql:"status"`
 	Expires  time.Time          `json:"expires" cql:"expires"`
