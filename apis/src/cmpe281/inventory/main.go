@@ -8,6 +8,7 @@ import (
 	"github.com/gocql/gocql"
 	"log"
 	"time"
+	"cmpe281/inventory/cron"
 )
 
 func main() {
@@ -47,6 +48,13 @@ func main() {
 	apiServer := &server.Server{
 		Cassandra: session,
 	}
+
+	go func() {
+		cleanerContext := cron.CleanerContext{Cassandra: session}
+		for range time.NewTicker(time.Minute).C {
+			cleanerContext.Cleanup()
+		}
+	}()
 
 	apiServer.Run(server.Config{
 		Ip:   ip,
