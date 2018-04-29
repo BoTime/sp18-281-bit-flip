@@ -132,3 +132,7 @@ $RECYCLE.BIN/
 
 
 # End of https://www.gitignore.io/api/go,macos,windows,jetbrains+all
+
+
+# Node.js
+node_modules
