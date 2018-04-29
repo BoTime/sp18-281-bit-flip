@@ -58,7 +58,7 @@ router.get('/', proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDERS GET");
 			console.log(req.body);	
-			return require('url').parse(req.url).path + 'orders/v1/orders';
+			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
 			console.log("BEFORE");
