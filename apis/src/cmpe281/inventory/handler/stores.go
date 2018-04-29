@@ -39,12 +39,20 @@ func (ctx *RequestContext) ListStores(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctx *RequestContext) GetStore(w http.ResponseWriter, r *http.Request) {
-	store, err := ctx.getStoreById(w, r)
+	storeId, err := ctx.getStoreIdFromRequest(r)
 	if err != nil {
-		store, err = ctx.getStoreByName(w, r)
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Store Identifier")
 	}
 
-	if err != nil {
+	// Set up Query
+	query, names := qb.Select("stores").Where(qb.Eq("id")).Limit(1).ToCql()
+	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.StoreDetails{
+		Id: storeId,
+	})
+
+	// Execute Query
+	var store model.StoreDetails
+	if err := gocqlx.Get(&store, q.Query); err != nil {
 		switch err {
 		case gocql.ErrNotFound:
 			output.WriteErrorMessage(w, http.StatusNotFound, "Store not found")
@@ -59,17 +67,18 @@ func (ctx *RequestContext) GetStore(w http.ResponseWriter, r *http.Request) {
 }
 
 // -- Helper Functions --
-func (ctx *RequestContext) getStoreId(w http.ResponseWriter, r *http.Request) (gocql.UUID, error) {
-	vars := mux.Vars(r)
+func (ctx *RequestContext) getStoreIdFromRequest(r *http.Request) (gocql.UUID, error) {
+	return ctx.getStoreId(mux.Vars(r)["store_id"])
+}
 
-	storeId, err := gocql.ParseUUID(vars["store_id"])
+func (ctx *RequestContext) getStoreId(rawStoreId string) (gocql.UUID, error) {
+	storeId, err := gocql.ParseUUID(rawStoreId)
 	if err != nil {
-		storeId, err = ctx.getStoreIdByName(vars["store_id"])
+		storeId, err = ctx.getStoreIdByName(rawStoreId)
 		if err != nil {
 			return gocql.UUID{}, err
 		}
 	}
-
 	return storeId, nil
 }
 
@@ -85,44 +94,4 @@ func (ctx *RequestContext) getStoreIdByName(name string) (gocql.UUID, error) {
 	}
 
 	return store.Id, nil
-}
-
-func (ctx *RequestContext) getStoreById(w http.ResponseWriter, r *http.Request) (*model.StoreDetails, error) {
-	// Parse UUID
-	storeId, err := gocql.ParseUUID(mux.Vars(r)["store_id"])
-	if err != nil {
-		return nil, err
-	}
-
-	// Set up Query
-	query, names := qb.Select("stores").Where(qb.Eq("id")).Limit(1).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.StoreDetails{
-		Id: storeId,
-	})
-
-	// Execute Query
-	var store model.StoreDetails
-	if err := gocqlx.Get(&store, q.Query); err != nil {
-		return nil, err
-	}
-
-	return &store, nil
-}
-
-func (ctx *RequestContext) getStoreByName(w http.ResponseWriter, r *http.Request) (*model.StoreDetails, error) {
-	// Secondary Index allows us to lookup ID by Store Name
-
-	// Set up Query
-	query, names := qb.Select("stores").Where(qb.Eq("name")).Limit(1).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.StoreDetails{
-		Name: mux.Vars(r)["store_id"],
-	})
-
-	// Execute Query
-	var store model.StoreDetails
-	if err := gocqlx.Get(&store, q.Query); err != nil {
-		return nil, err
-	}
-
-	return &store, nil
 }
