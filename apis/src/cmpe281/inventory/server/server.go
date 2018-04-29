@@ -92,7 +92,7 @@ func (srv *Server) Run(config Config) {
 				case "POST":
 					handlerContext.ConfirmAllocation(w, r)
 				case "DELETE":
-					handlerContext.DeleteAllocation(w, r)
+					handlerContext.ExpireAllocation(w, r)
 				default:
 					output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
 				}

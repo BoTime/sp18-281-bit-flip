@@ -36,6 +36,12 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	if len(allocationRequest.Products) == 0 {
+		log.Println("No Products Provided")
+		output.WriteErrorMessage(w, http.StatusBadRequest, "No Products Provided")
+		return
+	}
+
 	// -- Start: Retrieve Current Inventory from DB --
 	productIds := make([]gocql.UUID, len(allocationRequest.Products))
 	for i := 0; i < len(allocationRequest.Products); i++ {
@@ -229,11 +235,69 @@ func (ctx *RequestContext) GetAllocation(w http.ResponseWriter, r *http.Request)
 }
 
 func (ctx *RequestContext) ConfirmAllocation(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
+	userId, err := gocql.ParseUUID(common.GetUserId(r))
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid User Session")
+		return
+	}
+
+	allocationId, err := getAllocationIdFromRequest(r)
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Allocation Identifier")
+		return
+	}
+
+	query, names := qb.Update("allocations").
+		SetNamed("status", "new_status").
+			Where(qb.Eq("user_id"), qb.Eq("id")).
+				If(qb.InNamed("status", "old_status")).
+					ToCql()
+	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(qb.M{
+		"old_status": []string {"Unconfirmed"},
+		"new_status": "Confirmed",
+		"user_id": userId,
+		"id": allocationId,
+	})
+
+	if err := q.ExecRelease(); err != nil {
+		output.WriteErrorMessage(w, http.StatusInternalServerError, "")
+		return
+	}
+
+	output.WriteJson(w, allocationId)
 }
 
-func (ctx *RequestContext) DeleteAllocation(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
+func (ctx *RequestContext) ExpireAllocation(w http.ResponseWriter, r *http.Request) {
+	userId, err := gocql.ParseUUID(common.GetUserId(r))
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid User Session")
+		return
+	}
+
+	allocationId, err := getAllocationIdFromRequest(r)
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Allocation Identifier")
+		return
+	}
+
+	query, names := qb.Update("allocations").
+		SetNamed("status", "new_status").
+		Where(qb.Eq("user_id"), qb.Eq("id")).
+		If(qb.InNamed("status", "old_status")).
+		ToCql()
+	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(qb.M{
+		"old_status": []string {"Unconfirmed"},
+		"new_status": "Expired",
+		"user_id": userId,
+		"id": allocationId,
+	})
+
+	if err := q.ExecRelease(); err != nil {
+		output.WriteErrorMessage(w, http.StatusInternalServerError, "")
+		return
+	}
+
+	output.WriteJson(w, allocationId)
 }
 
 // -- Helper Functions --
