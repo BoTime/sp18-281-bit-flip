@@ -6,6 +6,16 @@ Frontend Node.js app is deployed to Heroku (Bo's account) using Git subtree comm
 
 App URL: https://infinite-atoll-21952.herokuapp.com/
 
+Deploy
+```
+# Push latest changes to Github
+git push origin frontend
+
+# Push latest changes to Heroku
+heroku login
+git push heroku frontend/master
+```
+
 
 ```shell
 # Push changes to Heroku remote
