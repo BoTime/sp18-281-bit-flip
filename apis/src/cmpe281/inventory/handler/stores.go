@@ -1,20 +1,17 @@
 package handler
 
 import (
-	"cmpe281/common/output"
-	"cmpe281/inventory/model"
 	"github.com/gocql/gocql"
 	"github.com/gorilla/mux"
+	"net/http"
+	"cmpe281/inventory/model"
 	"github.com/scylladb/gocqlx"
 	"github.com/scylladb/gocqlx/qb"
+	"cmpe281/common/output"
 	"log"
-	"net/http"
 )
 
-type RequestContext struct {
-	Cassandra *gocql.Session
-}
-
+// -- Request Handlers --
 func (ctx *RequestContext) ListStores(w http.ResponseWriter, r *http.Request) {
 	// Set up Query
 	query, names := qb.Select("stores").ToCql()
@@ -61,6 +58,35 @@ func (ctx *RequestContext) GetStore(w http.ResponseWriter, r *http.Request) {
 	output.WriteJson(w, store)
 }
 
+// -- Helper Functions --
+func (ctx *RequestContext) getStoreId(w http.ResponseWriter, r *http.Request) (gocql.UUID, error) {
+	vars := mux.Vars(r)
+
+	storeId, err := gocql.ParseUUID(vars["store_id"])
+	if err != nil {
+		storeId, err = ctx.getStoreIdByName(vars["store_id"])
+		if err != nil {
+			return gocql.UUID{}, err
+		}
+	}
+
+	return storeId, nil
+}
+
+func (ctx *RequestContext) getStoreIdByName(name string) (gocql.UUID, error) {
+	query, names := qb.Select("stores").Columns("id").Where(qb.Eq("name")).Limit(1).ToCql()
+	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.StoreDetails{
+		Name: name,
+	})
+
+	var store model.StoreDetails
+	if err := gocqlx.Get(&store, q.Query); err != nil {
+		return gocql.UUID{}, err
+	}
+
+	return store.Id, nil
+}
+
 func (ctx *RequestContext) getStoreById(w http.ResponseWriter, r *http.Request) (*model.StoreDetails, error) {
 	// Parse UUID
 	storeId, err := gocql.ParseUUID(mux.Vars(r)["store_id"])
@@ -99,57 +125,4 @@ func (ctx *RequestContext) getStoreByName(w http.ResponseWriter, r *http.Request
 	}
 
 	return &store, nil
-}
-
-func (ctx *RequestContext) GetInventory(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	querySelectors := qb.M{
-		"store_id": nil,
-	}
-
-	// Parse Query Inputs
-	if storeId, err := gocql.ParseUUID(vars["store_id"]); err == nil {
-		querySelectors["store_id"] = storeId
-	} else {
-		output.WriteErrorMessage(w, http.StatusBadRequest, "Store ID not provided")
-		return
-	}
-
-	// Set up Query
-	query, names := qb.Select("products").Where(qb.Eq("store_id")).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(querySelectors)
-
-	// Execute Query
-	var products []model.ProductDetails
-	if err := gocqlx.Iter(q.Query).Select(&products); err != nil {
-		log.Println(err)
-		output.WriteErrorMessage(w, http.StatusInternalServerError, "Internal Server Error")
-		return
-	}
-
-	// Transform Output to JSON
-	output.WriteJson(w, &model.ListProductsResult{
-		Products: products,
-	})
-}
-
-func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
-}
-
-func (ctx *RequestContext) ListAllocations(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
-}
-
-func (ctx *RequestContext) GetAllocation(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
-}
-
-func (ctx *RequestContext) ConfirmAllocation(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
-}
-
-func (ctx *RequestContext) DeleteAllocation(w http.ResponseWriter, r *http.Request) {
-	output.WriteErrorMessage(w, http.StatusNotImplemented, "To be implemented...")
 }
