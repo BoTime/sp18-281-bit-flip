@@ -1,6 +1,6 @@
     //To call delete of a user order
 	function CallDelete(pid){
-		var path = "http://"+$(location).attr('host')+"/orders";
+		var path = "https://"+$(location).attr('host')+"/orders";
 		console.log("Delete API ", path);
 		dataJSON = JSON.stringify({"pid": pid});
 		$.ajax({
@@ -20,7 +20,7 @@
 	//Dynamically create rows for a user orders to view
 	function CreateTableFromJSON() {
 		var myOrders  ;
-		var path = "http://"+$(location).attr('host')+"/orders";
+		var path = "https://"+$(location).attr('host')+"/orders";
 		console.log(path);
 		$.ajax({type: "GET", url: path, success: function(result){
 			myOrders =result;
@@ -66,9 +66,9 @@
 		complete: function(xhr, textStatus) {
 			console.log(xhr.status);
 			if (xhr.status === 400 || xhr.status === 401 || xhr.status === 404 ){
-				window.location="http://"+$(location).attr('host')+"/signin";
+				window.location="https://"+$(location).attr('host')+"/signin";
 			}else{
-				window.location="http://"+$(location).attr('host')+"/oops";
+				window.location="https://"+$(location).attr('host')+"/oops";
 			}	
 		} 
 	});
