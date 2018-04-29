@@ -22,7 +22,7 @@ func (ctx *RequestContext) GetInventory(w http.ResponseWriter, r *http.Request) 
 	})
 
 	// Execute Query
-	var products []model.ProductDetails
+	products := make([]model.InventoryDetails, 0)
 	if err := gocqlx.Iter(q.Query).Select(&products); err != nil {
 		log.Println(err)
 		output.WriteErrorMessage(w, http.StatusInternalServerError, "Internal Server Error")

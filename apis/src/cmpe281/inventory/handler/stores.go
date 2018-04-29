@@ -18,7 +18,7 @@ func (ctx *RequestContext) ListStores(w http.ResponseWriter, r *http.Request) {
 	q := gocqlx.Query(ctx.Cassandra.Query(query), names)
 
 	// Execute Query
-	var stores []model.StoreDetails
+	stores := make([]model.StoreDetails, 0)
 	if err := gocqlx.Iter(q.Query).Select(&stores); err != nil {
 		log.Println(err)
 		output.WriteErrorMessage(w, http.StatusInternalServerError, "Internal Server Error")
