@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/signal"
 	"time"
+	"cmpe281/common"
 )
 
 type Server struct {
@@ -71,28 +72,32 @@ func (srv *Server) Run(config Config) {
 				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
 			}
 		})
-		rootRouter.HandleFunc("/stores/{store_id}/allocations", func(w http.ResponseWriter, r *http.Request) {
-			switch r.Method {
-			case "GET":
-				handlerContext.ListAllocations(w, r)
-			case "POST":
-				handlerContext.CreateAllocation(w, r)
-			default:
-				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
-			}
-		})
-		rootRouter.HandleFunc("/stores/{store_id}/allocations/{allocation_id}", func(w http.ResponseWriter, r *http.Request) {
-			switch r.Method {
-			case "GET":
-				handlerContext.GetAllocation(w, r)
-			case "POST":
-				handlerContext.ConfirmAllocation(w, r)
-			case "DELETE":
-				handlerContext.DeleteAllocation(w, r)
-			default:
-				output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
-			}
-		})
+		{
+			allocRouter := rootRouter.PathPrefix("/stores/{store_id}/allocations").Subrouter()
+			allocRouter.Use(common.AuthMiddleware(true))
+			allocRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case "GET":
+					handlerContext.ListAllocations(w, r)
+				case "POST":
+					handlerContext.CreateAllocation(w, r)
+				default:
+					output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
+				}
+			})
+			allocRouter.HandleFunc("/{allocation_id}", func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case "GET":
+					handlerContext.GetAllocation(w, r)
+				case "POST":
+					handlerContext.ConfirmAllocation(w, r)
+				case "DELETE":
+					handlerContext.DeleteAllocation(w, r)
+				default:
+					output.WriteErrorMessage(w, http.StatusMethodNotAllowed, "Method Not Supported")
+				}
+			})
+		}
 	}
 
 	httpSrv := &http.Server{
