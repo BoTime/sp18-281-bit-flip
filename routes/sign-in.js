@@ -1,6 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var proxy = require('express-http-proxy');
+const express = require('express');
+const router = express.Router();
+const proxy = require('express-http-proxy');
+const RequestModifier = require('../utils/RequestModifier');
 
 const KONG_API_GATEWAY_URL = process.env.KONG_URL;
 
@@ -8,23 +9,12 @@ const testMiddleware = function(req, res, next) {
 	next();
 }
 
-router.post('/', testMiddleware, proxy(KONG_API_GATEWAY_URL,{
-		// proxyErrorHandler: function(err, res, next) {
-		// 	if (err) {
-		// 		console.log('=======')
-		// 		console.log(err)
-		// 	}
-		// 	switch (err && err.code) {
-		// 	  case 'ECONNRESET':    { return res.status(405).send('504 became 405'); }
-		// 	  case 'ECONNREFUSED':  { return res.status(200).send('gotcher back'); }
-		// 	  default:              { next(err); }
-		// 	}
+router.post('/', RequestModifier, proxy(KONG_API_GATEWAY_URL,{
+		// proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+		//     // you can update headers
+		//     proxyReqOpts.headers['Content-Type'] = 'application/json';
+		//     return proxyReqOpts;
 		// },
-		proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
-		    // you can update headers
-		    proxyReqOpts.headers['Content-Type'] = 'application/json';
-		    return proxyReqOpts;
-		},
 		proxyReqPathResolver: function(req) {
 			let newUrl = '';
 			console.log('request body====', req.body);
