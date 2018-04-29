@@ -28,7 +28,7 @@ const oops = require('./routes/oops');
 const created = require('./routes/created');
 // Create the app.
 var app = express();
-app.use(morgan('tiny'));
+// app.use(morgan('tiny'));
 /*
 app.use(cookieSession({
     secret: 'post-it',

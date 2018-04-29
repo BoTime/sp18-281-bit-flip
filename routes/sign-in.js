@@ -4,8 +4,11 @@ var proxy = require('express-http-proxy');
 
 const KONG_API_GATEWAY_URL = process.env.KONG_URL;
 
+const testMiddleware = function(req, res, next) {
+	next();
+}
 
-router.post('/', proxy(KONG_API_GATEWAY_URL,{
+router.post('/', testMiddleware, proxy(KONG_API_GATEWAY_URL,{
 		// proxyErrorHandler: function(err, res, next) {
 		// 	if (err) {
 		// 		console.log('=======')
@@ -17,8 +20,14 @@ router.post('/', proxy(KONG_API_GATEWAY_URL,{
 		// 	  default:              { next(err); }
 		// 	}
 		// },
+		proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+		    // you can update headers
+		    proxyReqOpts.headers['Content-Type'] = 'application/json';
+		    return proxyReqOpts;
+		},
 		proxyReqPathResolver: function(req) {
 			let newUrl = '';
+			console.log('request body====', req.body);
 			if (KONG_API_GATEWAY_URL.indexOf('localhost') !== -1) {
 				// request through local server
 				newUrl = require('url').parse(req.url).path + 'signin';
@@ -30,7 +39,7 @@ router.post('/', proxy(KONG_API_GATEWAY_URL,{
 			return newUrl;
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-		    // data = JSON.parse(proxyResData.toString('utf8'));
+		    data = JSON.parse(proxyResData.toString('utf8'));
 		   	console.log('status code====', proxyRes.statusCode);
 
 			if (proxyRes.statusCode === 200) {
@@ -47,7 +56,7 @@ router.post('/', proxy(KONG_API_GATEWAY_URL,{
 			} else {
 				console.log('********');
 			}
-		    return proxyResData;
+		    return JSON.stringify(data);
 	  	}
 	})
 );
