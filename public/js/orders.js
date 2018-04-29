@@ -33,11 +33,7 @@
 				var rowid = "ul"+i;
 				var list = document.createElement("ol");
 				var line1 = document.createElement("h3");
-				if(myOrders[i].store === 'store1'){
-					line1.innerHTML  = "<span style='color: red;text-transform:capitalize'>"+myOrders[i].status+"</span> at San Jose store";
-				}else{
-					line1.innerHTML  = "<span style='color: red;text-transform:capitalize'>"+myOrders[i].status+"</span> at Mountain View store";
-				}
+				line1.innerHTML  = "<span style='color: red;text-transform:capitalize'>"+myOrders[i].status+"</span> at "+myOrders[i].store +" store";
 				var button = document.createElement("button");
 				var span = document.createElement('span');
 				span.innerHTML = '<button id="' + myOrders[i].pay_id +'" onclick="CallDelete(this.id)" />Delete';
