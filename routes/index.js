@@ -12,9 +12,10 @@ router.get('/', (req, res) => {
 });
 
 router.get('/index', (req, res) => {
-    let name = localStorage.getItem('name');
-    if (name !== undefined) name = name.toUpperCase(); 
-    res.render('index', { name: name });
+    // let name = localStorage.getItem('name');
+    // if (name !== undefined) name = name.toUpperCase();
+    // res.render('index', { name: name });
+    res.render('index');
 });
 
 router.get('/menu', (req, res) => {
