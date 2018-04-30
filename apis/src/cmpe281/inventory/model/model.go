@@ -21,7 +21,7 @@ type InventoryDetails struct {
 	StoreId  gocql.UUID `json:"-" cql:"store_id"`
 	Id       gocql.UUID `json:"id" cql:"id"`
 	Name     string     `json:"item" cql:"name"`
-	Quantity string     `json:"quantity" cql:"quantity"`
+	Quantity string     `json:"qty" cql:"quantity"`
 	Size     string     `json:"size" cql:"size"`
 }
 
