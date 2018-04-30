@@ -42,6 +42,32 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	// -- Start: Parse ID from Item Name
+	{
+		defaultUUID := gocql.UUID{}
+		for _, product := range allocationRequest.Products {
+			if product.Id.String() == defaultUUID.String() {
+				// Cassandra doesn't support IN clause for non-primary searches :(
+				// We have to look up each name individually
+				query, names := qb.Select("products").Columns("id").Where(qb.Eq("name")).Limit(1).ToCql()
+				q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.ProductDetails{
+					Name: product.Name,
+				})
+				var productId model.ProductDetails
+				if err := gocqlx.Get(&productId, q.Query); err != nil {
+					log.Println("Failed to lookup Product IDs: ", err)
+					output.WriteErrorMessage(w, http.StatusInternalServerError, "Failed to lookup Product IDs")
+					return
+				}
+
+				product.Id = productId.Id
+			}
+		}
+	}
+	// -- End: Parse ID from Item Name
+
+	log.Println(allocationRequest)
+
 	// -- Start: Retrieve Current Inventory from DB --
 	productIds := make([]gocql.UUID, len(allocationRequest.Products))
 	for i := 0; i < len(allocationRequest.Products); i++ {
@@ -141,10 +167,10 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	updatedProducts := make([]model.InventoryDetails, 0, len(allocationRequest.Products))
+	updatedProducts := make([]*model.InventoryDetails, 0, len(allocationRequest.Products))
 	for _, product := range allocationRequest.Products {
 		inv := inventoryLookup[product.Id]
-		updatedProducts = append(updatedProducts, model.InventoryDetails{
+		updatedProducts = append(updatedProducts, &model.InventoryDetails{
 			Id: product.Id,
 			Name: inv.Name,
 			Quantity: product.Quantity,
@@ -183,7 +209,7 @@ func (ctx *RequestContext) ListAllocations(w http.ResponseWriter, r *http.Reques
 		UserId: userId,
 	})
 
-	allocations := make([]model.AllocationDetails, 0)
+	allocations := make([]*model.AllocationDetails, 0)
 	if gocqlx.Select(&allocations, q.Query); err != nil {
 		switch err {
 		default:

@@ -13,24 +13,24 @@ type StoreDetails struct {
 
 type ProductDetails struct {
 	Id   gocql.UUID `json:"id" cql:"id"`
-	Name string     `json:"name" cql:"name"`
+	Name string     `json:"item" cql:"name"`
 	Size string     `json:"size" cql:"size"`
 }
 
 type InventoryDetails struct {
 	StoreId  gocql.UUID `json:"-" cql:"store_id"`
 	Id       gocql.UUID `json:"id" cql:"id"`
-	Name     string     `json:"name" cql:"name"`
+	Name     string     `json:"item" cql:"name"`
 	Quantity string     `json:"quantity" cql:"quantity"`
 	Size     string     `json:"size" cql:"size"`
 }
 
 type AllocationDetails struct {
-	UserId   gocql.UUID         `json:"-" cql:"user_id"`
-	Id       gocql.UUID         `json:"id" cql:"id"`
-	Status   string             `json:"status" cql:"status"`
-	Expires  time.Time          `json:"expires" cql:"expires"`
-	Products []InventoryDetails `json:"products" cql:"expires"`
+	UserId   gocql.UUID          `json:"-" cql:"user_id"`
+	Id       gocql.UUID          `json:"id" cql:"id"`
+	Status   string              `json:"status" cql:"status"`
+	Expires  time.Time           `json:"expires" cql:"expires"`
+	Products []*InventoryDetails `json:"products" cql:"expires"`
 }
 
 // API Models
@@ -40,13 +40,13 @@ type ListStoresResult struct {
 }
 
 type ListInventoryResult struct {
-	Products []InventoryDetails `json:"products"`
+	Products []*InventoryDetails `json:"products"`
 }
 
 type ListAllocationsResult struct {
-	Allocations []AllocationDetails `json:"allocations"`
+	Allocations []*AllocationDetails `json:"allocations"`
 }
 
 type CreateAllocationRequest struct {
-	Products []InventoryDetails `json:"products"`
+	Products []*InventoryDetails `json:"products"`
 }
