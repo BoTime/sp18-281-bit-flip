@@ -14,6 +14,10 @@ git push origin frontend
 # Push latest changes to Heroku
 heroku login
 git push heroku frontend/master
+
+# Restart app
+heroku restart
+
 ```
 
 

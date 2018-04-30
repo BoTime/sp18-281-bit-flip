@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ejs = require('ejs');
 var proxy = require('express-http-proxy');
+const JwtUtils = require('../utils/JwtToken');
 const goAPI =  process.env.KONG_URL;
 /**
  * Fxn that returns a JSON stringified version of an object.
@@ -11,9 +12,9 @@ const goAPI =  process.env.KONG_URL;
  * returns {string} JSON stringified version of object
  */
 function JSONStringifyTweeked(object) {
-    var cache = [];        
+    var cache = [];
     var str = JSON.stringify(object,
-        // custom replacer fxn - gets around "TypeError: Converting circular structure to JSON" 
+        // custom replacer fxn - gets around "TypeError: Converting circular structure to JSON"
         function(key, value) {
             if (typeof value === 'object' && value !== null) {
                 if (cache.indexOf(value) !== -1) {
@@ -30,10 +31,10 @@ function JSONStringifyTweeked(object) {
 };
 
 // Delete order pid
-router.delete('/', proxy(goAPI,{
+router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDERS DELETE");
-			console.log(req.body);	
+			console.log(req.body);
 			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
@@ -54,10 +55,10 @@ router.delete('/', proxy(goAPI,{
 	})
 );
 //Get orders of a user
-router.get('/', proxy(goAPI,{
+router.get('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDERS GET");
-			console.log(req.body);	
+			console.log(req.body);
 			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
@@ -65,7 +66,7 @@ router.get('/', proxy(goAPI,{
 		    data = JSON.parse(proxyResData);
 			//data = JSONStringifyTweeked(proxyResData);
 			console.log('status code====', proxyRes.statusCode);
-			
+
 			if (proxyRes.statusCode === 200) {
 				// Order updated sucessfully
 				userRes.statusCode = 200;
@@ -90,4 +91,3 @@ router.get('/', proxy(goAPI,{
 
 
 module.exports = router;
- 
