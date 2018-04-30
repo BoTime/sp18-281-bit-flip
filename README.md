@@ -36,8 +36,10 @@ echo "Running app..."<br>
 3. Stop and start the ec2 instance to check if system log shows logs base don above<br>
 4. stop the ec2 instance, create an image of it.<br>
 5. Create a template from above image (In netwrk interface: subnet and Security Group (make sure your app port are exposed)should match)<br>
-6. Create Auto scale group based on above and link it with the load balancer.<br>
+6. Create Auto scale group based on above(version should be latest) and link it with the load balancer.<br>
 7. Check load balancer, instances should registered which are made through ASG.<br>
+
+Incase you wish to do midfications to the backend, create a new AMI of above with modifications, and create new template version to the existing. Autoscale group should be able to use the latest.
 
 ### Links
 
