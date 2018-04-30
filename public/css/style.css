@@ -1,8 +1,8 @@
 /*
 Free Html5 Responsive Templates : http://www.html5xcss3.com/
 */
-@import url(https://fonts.googleapis.com/css?family=Ubuntu);
-@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+@import url(//fonts.googleapis.com/css?family=Ubuntu);
+@import url(//fonts.googleapis.com/css?family=Open+Sans);
 /* ---------------------------------------------------------------------------- */
 /* ------------------------------------Reset----------------------------------- */
 /* ---------------------------------------------------------------------------- */
@@ -221,7 +221,7 @@ a.button:hover{background-color: #eee;color: #333;}
 .crumbs ul li:first-child a {border-top-left-radius: 6px; border-bottom-left-radius: 6px;}
 .crumbs ul li:first-child a:before {display: none; }
 .crumbs ul li:last-child a {padding-right: 40px;padding-left: 50px;border-top-right-radius: 6px; border-bottom-right-radius: 6px;}
-.crumbs ul li:last-child a:after {display: none; }		
+.crumbs ul li:last-child a:after {display: none; }
 .crumbs ul li a:hover {background: #222;color: #fff;}
 .crumbs ul li a:hover:after {border-left-color: #222;}
 
