@@ -2,12 +2,14 @@ var express = require('express');
 var router = express.Router();
 var ejs = require('ejs');
 var proxy = require('express-http-proxy');
+const JwtUtils = require('../utils/JwtToken');
+
 const goAPI =  process.env.KONG_URL;
 // Return order page
-router.post('/', proxy(goAPI,{
+router.post('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 		proxyReqPathResolver: function(req) {
 			console.log("ORDER POST");
-			console.log(req.body);	
+			console.log(req.body);
 			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
@@ -18,7 +20,7 @@ router.post('/', proxy(goAPI,{
 				console.log("Sucess");
 				// Order updated sucessfully
 				//userRes.statusCode = 201;
-				userRes.redirect('created');	
+				userRes.redirect('created');
 
 			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
 				// Order placing failed, redirect to signin page
@@ -30,17 +32,16 @@ router.post('/', proxy(goAPI,{
 				console.log("500");
 				userRes.statusCode = 500;
 				userRes.redirect('oops');
-			}	
+			}
 		    return userRes;
 	  	}
 	})
 );
 
 // Return order page
-router.get('/', (req, res) => {
+router.get('/', JwtUtils.attachTokenToHeader, (req, res) => {
 	console.log("order get",req);
 	res.render('order');
 });
 
 module.exports = router;
- 

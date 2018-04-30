@@ -70,6 +70,6 @@ app.use('/history', ordersHistory);
 app.use('/oops', oops);
 app.use('/created', created);
 
-var port = process.env.PORT || 8000;
+var port = process.env.FRONTEND_PORT || 8000;
 app.listen(port);
 console.log("Listening on port 8000");
