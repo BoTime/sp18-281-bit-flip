@@ -16,7 +16,7 @@
 				alert("Something went wrong, try again");
 			}
 		});
-	};	
+	};
 	//Dynamically create rows for a user orders to view
 	function CreateTableFromJSON() {
 		var myOrders  ;
@@ -28,7 +28,7 @@
 		// ADD JSON DATA TO THE DIV AS ROWS.
 			for (var i = 0; myOrders != null && i < myOrders.length; i++) {
 				 // CREATE DYNAMIC DIV.
-				var brk = document.createElement("br"); 			
+				var brk = document.createElement("br");
 				var table = document.createElement("div");
 				var rowid = "ul"+i;
 				var list = document.createElement("ol");
@@ -37,7 +37,7 @@
 				var button = document.createElement("button");
 				var span = document.createElement('span');
 				span.innerHTML = '<button id="' + myOrders[i].pay_id +'" onclick="CallDelete(this.id)" />Delete';
-				
+
 				//If orders status is placed, not allow user to delete them
 				if(myOrders[i].status === 'placed'){
 						span.innerHTML = '';
@@ -61,16 +61,16 @@
 				// FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
 				$("#showData").append(table);
 				console.log("Appended", i, table);
-			}        
+			}
 		},
 		complete: function(xhr, textStatus) {
 			console.log(xhr.status);
 			if (xhr.status === 400 || xhr.status === 401 || xhr.status === 404 ){
 				window.location="https://"+$(location).attr('host')+"/signin";
-			}else{
+			}else if (xhr.status === 500 || xhr.status === 501 || xhr.status === 502) {
 				window.location="https://"+$(location).attr('host')+"/oops";
-			}	
-		} 
+			}
+		}
 	});
-		
+
     }
