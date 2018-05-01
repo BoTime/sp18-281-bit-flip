@@ -21,7 +21,7 @@ No body needed
 
 ### Ping with Auth token
 
-#### GET /orders/v1/order/ping
+#### GET /orders/v1/ping
 ##### Request Headers
 
 | Header | Description |
@@ -33,7 +33,7 @@ No body needed
 No body needed
 
 ##### Response Body
-"Authenticated"  -Success for valid Token
+"Authenticated"  -Success for valid Token<br>
 "Bad Authentication" -Failure for invalid Token
 
 ### Create Order
@@ -85,7 +85,7 @@ Create a Starbcuks drink order.
 |---------------|------|-------------|
 | `store` | ("San Jose", "Mountain View") as string | The store identifier for location of purchase |
 | `product` | [Order](#Order Resource) | List of drink items, quantity and size for the order. |
-| `payment` | [Payment](#Payment-Resource) | Payment details for the order. |
+| `payment` | [Payment](#Payment Resource) | Payment details for the order. |
 
 ### List Orders
 
@@ -197,6 +197,7 @@ err/msg data in case of internalserver error<br>
 | `payment.billing.state` | string | Customer Billing State. |
 | `payment.billing.zipcode` | string | Customer Billing Zip Code. |
 | `payment.amount` | string | Customer Billing Amount. |
+
 ##### Payment Resource
 ##### Request Body
 
