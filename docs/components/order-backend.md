@@ -21,7 +21,7 @@ No body needed
 
 ### Ping with Auth token
 
-#### GET /orders/v1/order
+#### GET /orders/v1/order/ping
 ##### Request Headers
 
 | Header | Description |
@@ -40,7 +40,7 @@ No body needed
 
 Create a Starbcuks drink order.
 
-#### POST /orders/v1/orders
+#### POST /orders/v1/order
 ##### Request Headers
 
 | Header | Description |
@@ -50,7 +50,7 @@ Create a Starbcuks drink order.
 ##### Request Body
 
 ```json
-{ "store": "store2",
+{ "store": "San Jose",
   "product":
    [ 
      { "item": "Cafe Americano", "qty": "2", "size": "medium" },
@@ -73,10 +73,17 @@ Create a Starbcuks drink order.
 	}
 } 
 ```
+##### Response Body
+"created", StatusCreated on sucsess<br>
+"Bad Dependency-Inventory"/"Bad Dependency-Payment" for internal server error for dependencies<br>
+"Bad Card Details",StatusBadRequest if Payment declines<br>
+"Failed to create order" for internal server error while order creation<br>
+"Inventory Lacking", StatusBadRequest incase Inventory doesnt confirm the order request<br>
+
 
 | Property Name | Type | Description |
 |---------------|------|-------------|
-| `store` | ("store1", "store2") as string | The store identifier for location of purchase |
+| `store` | ("San Jose", "Mountain View") as string | The store identifier for location of purchase |
 | `product` | [Order](#Order Resource) | List of drink items, quantity and size for the order. |
 | `payment` | [Payment](#Payment-Resource) | Payment details for the order. |
 
@@ -84,7 +91,7 @@ Create a Starbcuks drink order.
 
 List all Starbcuks drink orders.
 
-#### GET /orders/v1/orders
+#### GET /orders/v1/order
 ##### Request Headers
 
 | Header | Description |
@@ -95,14 +102,14 @@ List all Starbcuks drink orders.
 
 Do not supply a request body for this method.
 
-##### Response Body
+##### Response Body on sucess -StatusOK
 
 ```jsonString
 "[
 	{
 		\"pay_id\":\"06da992b-485f-11e8-93bb-204747ddadd5\",
 		\"status\":\"processed\",
-		\"store\":\"store1\",
+		\"store\":\"San Jose\",
 		\"product\":[
 						{\"item\":\"Cappuccino\",\"qty\":\"1\",\"size\":\"small\"},
 						{\"item\":\"Cappuccino\",\"qty\":\"5\",\"size\":\"small\"}
@@ -111,7 +118,7 @@ Do not supply a request body for this method.
 	{
 		\"pay_id\":\"3b0b9639-485f-11e8-93bc-204747ddadd5\",
 		\"status\":\"processed\",
-		\"store\":\"store2\",
+		\"store\":\"Mountain View\",
 		\"product\":[
 						{\"item\":\"Cafe Americano\",\"qty\":\"1\",\"size\":\"medium\"},
 						{\"item\":\"Caffe Late\",\"qty\":\"1\",\"size\":\"small\"}
@@ -119,6 +126,9 @@ Do not supply a request body for this method.
 	}
 ]"
 ```
+err/msg data in case of internalserver error.<br>
+"Unable to Authenticate" for invalid token request.<br>
+"Bad Authentication" for  unauthorized request.<br>
 
 ### Update Order
 #### PATCH /orders/v1/order
@@ -128,14 +138,23 @@ Not Supported, internally handled by Go routine
 ### Delete Order
 #### DELETE /orders/v1/order
 
+##### Request Body
+
 { "pid": "e5440db4-468d-11e8-84b1-204747ddadd5"}
 
 As the userId will be decoded from Auth token.
 
+##### Response<br>
+"Deleted", StatusAccepted on Success<br>
+"Something went bad with payload", StatusBadRequest for bad pid data<br>
+err/msg data in case of internalserver error<br>
+"Unable to Authenticate" for invalid token request.<br>
+"Bad Authentication" for  unauthorized request.
+<br>
 #### Resources
 ##### Order Resource
 ```json
-{ "store": "store2",
+{ "store": "San Jose",
   "product":
    [ 
      { "item": "Cafe Americano", "qty": "2", "size": "medium" },
