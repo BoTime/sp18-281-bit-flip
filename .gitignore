@@ -136,3 +136,6 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules
+
+# Redis
+dump.rdb

@@ -15,7 +15,8 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
         user models.User
         responseBody = make(map[string] interface{})
     )
-
+    fmt.Println("request body====", r.Body)
+    fmt.Println("request header Auth ====", r.Header.Get("Authorization"))
     if err := json.NewDecoder(r.Body).Decode(&user); err == nil {
         // 1. Create a new user
         if userId, err := user.CreateUserId(&user); err == nil && userId != nil {
@@ -27,6 +28,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 
                 responseBody["msg"] = "Signup success"
                 responseBody["userId"] = userId
+                responseBody["name"] = user.Name
 
             } else {
                 // [Error] Unable to geenrate JWT token
@@ -43,6 +45,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
     } else {
         // [Error] Bad json format
         w.WriteHeader(http.StatusBadRequest)
+        fmt.Println("Bad json format")
         responseBody["msg"] = "Invalid JSON format"
     }
 

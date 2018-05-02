@@ -15,6 +15,7 @@ type User struct {
     Email string `json:"email" binding:"required"`
     Password string `json:"password"`
     UserId string `json:"user_id"`
+    Name string `json:"name"`
 }
 
 var (
@@ -59,7 +60,7 @@ func connectRedis() *redis.Client {
 
 
 // ===== Public APIs ===== //
-func (u User) VerifyPasswordAndReturnUserId() (string, error) {
+func (u *User) VerifyPasswordAndReturnUserId() (string, error) {
     if user, err := getUserByEmail(u.Email); err != nil {
         // Probably server error
         log.Println(err)
@@ -68,6 +69,7 @@ func (u User) VerifyPasswordAndReturnUserId() (string, error) {
     } else {
         if user != nil && passwordMatches(user.Password, u.Password) == true {
             // Login success
+            u.Name = user.Name
             return user.UserId, nil
 
         } else {
@@ -169,6 +171,7 @@ func getUserIdByEmail(email string) (*uuid.UUID, error) {
 
 func getUserByEmail(email string) (*User, error) {
     userInfoString, err := client.Get(email).Result()
+    log.Println("getUserByEmail====", userInfoString)
     if err != nil && err.Error() == "redis: nil" {
         // Email does not exists
         log.Println("[* | Sign Up] Failed to read from Redis")

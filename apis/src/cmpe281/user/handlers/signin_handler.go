@@ -19,7 +19,7 @@ func SigninPostHandler(w http.ResponseWriter, r *http.Request) {
         user models.User
         responseBody = make(map[string] interface{})
     )
-
+    fmt.Println("request body====", r.Body)
     if err := json.NewDecoder(r.Body).Decode(&user); err == nil {
         // 1. Get userId
         // ignore error during dev phase
@@ -32,6 +32,7 @@ func SigninPostHandler(w http.ResponseWriter, r *http.Request) {
 
                 responseBody["msg"] = "Login success"
                 responseBody["userId"] = userId
+                responseBody["name"] = user.Name
 
             } else {
                 // [Error] Unable to geenrate JWT token
@@ -48,6 +49,7 @@ func SigninPostHandler(w http.ResponseWriter, r *http.Request) {
     } else {
         // [Error] Bad json format
         w.WriteHeader(http.StatusBadRequest)
+        fmt.Println("Invalid JSON format")
         responseBody["msg"] = "Invalid JSON format"
     }
 
