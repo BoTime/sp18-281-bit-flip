@@ -34,7 +34,7 @@ func connectRedis() *redis.Client {
         REDIS_PORT string
     )
 
-    if err := godotenv.Load("../.env"); err != nil {
+    if err := godotenv.Load(".env"); err != nil {
         REDIS_DOMAIN = "localhost"
         REDIS_PORT = "6379"
 
