@@ -40,7 +40,7 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
 		    data = JSON.parse(proxyResData.toString('utf8'));
 		   	console.log('status code====', proxyRes.statusCode);
-			if (proxyRes.statusCode === 200) {
+			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 202) {
 				// Order updated sucessfully
 				userRes.statusCode = 200;
 				return;
