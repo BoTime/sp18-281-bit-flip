@@ -18,7 +18,7 @@ func (ctx *RequestContext) ListStores(w http.ResponseWriter, r *http.Request) {
 	query, names := qb.Select("stores").ToCql()
 	storeChan := make(chan[]model.StoreDetails)
 	getFunc := func(session *gocql.Session, storeChan chan[]model.StoreDetails) {
-		q := gocqlx.Query(ctx.Database.Shard1.Query(query), names)
+		q := gocqlx.Query(session.Query(query), names)
 
 		// Execute Query
 		stores := make([]model.StoreDetails, 0)
