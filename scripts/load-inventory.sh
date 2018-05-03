@@ -3,12 +3,9 @@
 storeid="$1"
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-  raw=$(printf "$line" | cut -d',' -f1)
-  id=${raw##%% }
-  raw=$(printf "$line" | cut -d',' -f2)
-  name=${raw##%% }
-  raw=$(printf "$line" | cut -d',' -f3)
-  size=${raw##%% }
+  id=$(printf "$line" | cut -d',' -f1 | xargs)
+  name=$(printf "$line" | cut -d',' -f2 | xargs)
+  size=$(printf "$line" | cut -d',' -f3 | xargs)
 
   printf "
     INSERT INTO starbucks.products
