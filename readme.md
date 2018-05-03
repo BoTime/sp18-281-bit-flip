@@ -8,16 +8,24 @@ App URL: https://infinite-atoll-21952.herokuapp.com/
 
 Deploy
 ```
+
+# !! Login into Heroku
+heroku login
+
 # Push latest changes to Github
 git push origin frontend
 
 # Push latest changes to Heroku
-heroku login
 git push heroku frontend/master
 
 # Restart app
 heroku restart
 
+# List Heroku apps
+heroku apps
+
+# Show logs of an app (eg. our frontend)
+heroku logs --app infinite-atoll-21952
 ```
 
 
