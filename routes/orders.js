@@ -38,7 +38,7 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-		    data = JSON.parse(proxyResData.toString('utf8'));
+		    data = JSON.parse(proxyResData);
 		   	console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 202) {
 				// Order updated sucessfully
