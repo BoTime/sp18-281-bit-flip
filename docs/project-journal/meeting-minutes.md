@@ -116,3 +116,23 @@
 
 ### Decision
 Meeting in person on Sunday morning 9:00 am for integration tests.
+
+---
+
+## Meeting - 05
+
+| LOCATION | Library + Whatsapp Group |
+|:----|:----|
+| **Date** | 2018/04/29 |
+| **Facilitator** | N/A |
+| **Timer** | N/A |
+| **Note Taker** | Vimmi |
+| **Attendees** | Brian Bamsch<br>Bo Liu<br>Vimmi Swami<br> |
+
+### Agenda Topics
+1. Have basic integration done of User, Order, Inventory and Payment APIs
+2. Update Kong config to remove duplicate Order references
+3. Testing UI for end to end working
+
+### Decision
+Have Auto scaling done for individual modules and meet again for proper testing and issues.

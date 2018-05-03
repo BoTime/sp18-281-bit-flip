@@ -49,6 +49,19 @@ func main() {
 		Password: dbpass,
 	}
 
+	cluster.ReconnectionPolicy = &gocql.ConstantReconnectionPolicy{
+		MaxRetries: 10,
+		Interval: 5 * time.Minute,
+	}
+	cluster.RetryPolicy = &gocql.DowngradingConsistencyRetryPolicy{
+		ConsistencyLevelsToTry: []gocql.Consistency {
+			gocql.Quorum,
+			gocql.LocalQuorum,
+			gocql.One,
+		},
+	}
+	cluster.IgnorePeerAddr = true
+
 	log.Printf("Connecting to Cassandra...")
 	session, err := cluster.CreateSession()
 	if err != nil {

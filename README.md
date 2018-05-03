@@ -1,5 +1,8 @@
 ## CMPE 281 Team Project
 
+### Project Submisison Report edit link:
+https://docs.google.com/document/d/1GHot9Dl56YPM3TW3IDoWyk40Agwt-fhS8CGDteBda-I/edit?usp=sharing
+
 ### Deploy Frontend
 
 Frontend Node.js app is deployed to Heroku (Bo's account) using Git subtree command.

@@ -33,10 +33,23 @@ func main() {
 	cluster := gocql.NewCluster(parse.SplitCommaSeparated(dbhosts)...)
 	cluster.Keyspace = dbkeyspace
 	cluster.Timeout = 5 * time.Second
+
 	cluster.Authenticator = gocql.PasswordAuthenticator{
 		Username: dbuser,
 		Password: dbpass,
 	}
+	cluster.ReconnectionPolicy = &gocql.ConstantReconnectionPolicy{
+		MaxRetries: 10,
+		Interval: 5 * time.Minute,
+	}
+	cluster.RetryPolicy = &gocql.DowngradingConsistencyRetryPolicy{
+		ConsistencyLevelsToTry: []gocql.Consistency {
+			gocql.Quorum,
+			gocql.LocalQuorum,
+			gocql.One,
+		},
+	}
+	cluster.IgnorePeerAddr = true
 
 	log.Printf("Connecting to Cassandra...")
 	session, err := cluster.CreateSession()
