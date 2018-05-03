@@ -136,3 +136,25 @@ Meeting in person on Sunday morning 9:00 am for integration tests.
 
 ### Decision
 Have Auto scaling done for individual modules and meet again for proper testing and issues.
+
+---
+
+## Meeting - 06
+
+| LOCATION | Library + Whatsapp Group |
+|:----|:----|
+| **Date** | 2018/05/202 |
+| **Facilitator** | N/A |
+| **Timer** | N/A |
+| **Note Taker** | Bo |
+| **Attendees** | Brian Bamsch<br>Bo Liu<br>Vimmi Swami<br> |
+
+### Agenda Topics
+1. Debugging EC2 related issue: cannot connect to Cassandra from Go API.
+2. Discussed how to setup auto-scaling group and load balancer.
+3. Performed end to end integration tests.
+
+### Action Items:
+1. Fix the authentication issue caused by local storage. (Bo)
+2. Sharding inventory database based on store id. (Brian)
+3. Investigate error message after deleting order. (Vimmi)
