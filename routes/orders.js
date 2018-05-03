@@ -44,8 +44,6 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 				// Order updated sucessfully
 				console.log('Delete sucess in route');
 				userRes.statusCode = 200;
-				return;
-
 			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
 				// Order placing failed, redirect to signin page
 				userRes.statusCode = 401;
