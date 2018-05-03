@@ -3,9 +3,7 @@ package server
 import (
 	"cmpe281/common/output"
 	"cmpe281/inventory/handler"
-	"context"
 	"fmt"
-	"github.com/gocql/gocql"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -13,10 +11,17 @@ import (
 	"os/signal"
 	"time"
 	"cmpe281/common"
+	"context"
+	"github.com/gocql/gocql"
 )
 
+type ShardedDatabaseContext struct {
+	Shard1 *gocql.Session
+	Shard2 *gocql.Session
+}
+
 type Server struct {
-	Cassandra *gocql.Session
+	Database ShardedDatabaseContext
 }
 
 type Config struct {
@@ -29,7 +34,10 @@ func (srv *Server) Run(config Config) {
 	rootRouter := mux.NewRouter()
 
 	handlerContext := handler.RequestContext{
-		Cassandra: srv.Cassandra,
+		Database: handler.ShardedDatabaseContext{
+			Shard1: srv.Database.Shard1,
+			Shard2: srv.Database.Shard2,
+		},
 	}
 
 	// Health Check Handler

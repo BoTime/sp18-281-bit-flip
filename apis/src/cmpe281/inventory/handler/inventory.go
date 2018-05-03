@@ -17,9 +17,11 @@ func (ctx *RequestContext) GetInventory(w http.ResponseWriter, r *http.Request) 
 		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Store Identifier")
 	}
 
+	dbShard := SelectShard(storeId, ctx.Database)
+
 	// Set up Query
 	query, names := qb.Select("inventory").Where(qb.Eq("store_id")).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.InventoryDetails{
+	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.InventoryDetails{
 		StoreId: storeId,
 	})
 
@@ -38,14 +40,14 @@ func (ctx *RequestContext) GetInventory(w http.ResponseWriter, r *http.Request) 
 }
 
 // -- Helper Functions --
-func (ctx *RequestContext) getProductIdFromRequest(r *http.Request) (gocql.UUID, error) {
-	return ctx.getProductId(mux.Vars(r)["product_id"])
+func (ctx *RequestContext) getProductIdFromRequest(r *http.Request, session gocql.Session) (gocql.UUID, error) {
+	return ctx.getProductId(mux.Vars(r)["product_id"], session)
 }
 
-func (ctx *RequestContext) getProductId(rawProductId string) (gocql.UUID, error) {
+func (ctx *RequestContext) getProductId(rawProductId string, session gocql.Session) (gocql.UUID, error) {
 	productId, err := gocql.ParseUUID(rawProductId)
 	if err != nil {
-		productId, err = ctx.getProductIdByName(rawProductId)
+		productId, err = ctx.getProductIdByName(rawProductId, session)
 		if err != nil {
 			return gocql.UUID{}, err
 		}
@@ -54,9 +56,9 @@ func (ctx *RequestContext) getProductId(rawProductId string) (gocql.UUID, error)
 	return productId, nil
 }
 
-func (ctx *RequestContext) getProductIdByName(name string) (gocql.UUID, error) {
+func (ctx *RequestContext) getProductIdByName(name string, session gocql.Session) (gocql.UUID, error) {
 	query, names := qb.Select("products").Distinct("id").Where(qb.Eq("name")).Limit(1).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.ProductDetails{
+	q := gocqlx.Query(session.Query(query), names).BindStruct(model.ProductDetails{
 		Name: name,
 	})
 

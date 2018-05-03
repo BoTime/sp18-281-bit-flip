@@ -28,6 +28,8 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	dbShard := SelectShard(storeId, ctx.Database)
+
 	var allocationRequest model.CreateAllocationRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&allocationRequest); err != nil {
@@ -50,7 +52,7 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 				// Cassandra doesn't support IN clause for non-primary searches :(
 				// We have to look up each name individually
 				query, names := qb.Select("products").Columns("id").Where(qb.Eq("name")).Limit(1).ToCql()
-				q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.ProductDetails{
+				q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.ProductDetails{
 					Name: product.Name,
 				})
 				var productId model.ProductDetails
@@ -75,7 +77,7 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 	}
 
 	query, names := qb.Select("inventory").Where(qb.Eq("store_id"), qb.In("id")).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(qb.M{
+	q := gocqlx.Query(dbShard.Query(query), names).BindMap(qb.M{
 		"store_id": storeId,
 		"id": productIds,
 	})
@@ -153,7 +155,7 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 		batchData[prefix + ".id"] = inventoryMutation.Inventory.Id
 	}
 	query, names = batch.ToCql()
-	q = gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(batchData)
+	q = gocqlx.Query(dbShard.Query(query), names).BindMap(batchData)
 	if err := q.ExecRelease(); err != nil {
 		output.WriteErrorMessage(w, http.StatusInternalServerError, "Failed to commit inventory")
 		return
@@ -187,7 +189,7 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 	}
 
 	query, names = qb.Insert("allocations").Columns("user_id", "id", "status", "expires", "products").ToCql()
-	q = gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(allocation)
+	q = gocqlx.Query(dbShard.Query(query), names).BindStruct(allocation)
 	if err := q.ExecRelease(); err != nil {
 		output.WriteErrorMessage(w, http.StatusInternalServerError, "Unable to write allocation")
 		return
@@ -204,23 +206,27 @@ func (ctx *RequestContext) ListAllocations(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	storeId, err := ctx.getStoreIdFromRequest(r)
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Store Identifier")
+		return
+	}
+
+	dbShard := SelectShard(storeId, ctx.Database)
+
 	query, names := qb.Select("allocations").Where(qb.Eq("user_id")).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.AllocationDetails{
+	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
 		UserId: userId,
 	})
 
-	allocations := make([]*model.AllocationDetails, 0)
-	if gocqlx.Select(&allocations, q.Query); err != nil {
-		switch err {
-		default:
-			log.Println(err)
-			output.WriteErrorMessage(w, http.StatusInternalServerError, "Internal Server Error")
-		}
+	allocs := make([]*model.AllocationDetails, 0)
+	if err := gocqlx.Select(&allocs, q.Query); err != nil {
+		output.WriteErrorMessage(w, http.StatusInternalServerError, "Failed to lookup allocations")
 		return
 	}
 
 	output.WriteJson(w, model.ListAllocationsResult{
-		Allocations: allocations,
+		Allocations: allocs,
 	})
 }
 
@@ -237,9 +243,17 @@ func (ctx *RequestContext) GetAllocation(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	storeId, err := ctx.getStoreIdFromRequest(r)
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Store Identifier")
+		return
+	}
+
+	dbShard := SelectShard(storeId, ctx.Database)
+
 	// Set up Query
 	query, names := qb.Select("allocations").Where(qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindStruct(model.AllocationDetails{
+	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
 		UserId: userId,
 		Id: allocationId,
 	})
@@ -273,24 +287,60 @@ func (ctx *RequestContext) ConfirmAllocation(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	query, names := qb.Update("allocations").
+	storeId, err := ctx.getStoreIdFromRequest(r)
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Store Identifier")
+		return
+	}
+
+	dbShard := SelectShard(storeId, ctx.Database)
+
+	query, names := qb.Select("allocations").
+		Where(qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
+	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
+		UserId: userId,
+		Id: allocationId,
+	})
+
+	var allocation model.AllocationDetails
+	if err := gocqlx.Get(&allocation, q.Query); err != nil {
+		switch err {
+		case gocql.ErrNotFound:
+			output.WriteErrorMessage(w, http.StatusNotFound, "Store not found")
+		default:
+			log.Println(err)
+			output.WriteErrorMessage(w, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	if allocation.Status != "Unconfirmed" {
+		log.Println("Allocation in unexpected state")
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Allocation not in Unconfirmed state")
+		return
+	}
+
+	allocation.Status = "Confirmed"
+
+	query, names = qb.Update("allocations").
 		SetNamed("status", "new_status").
 			Where(qb.Eq("user_id"), qb.Eq("id")).
 				If(qb.InNamed("status", "old_status")).
 					ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(qb.M{
+	q = gocqlx.Query(dbShard.Query(query), names).BindMap(qb.M{
 		"old_status": []string {"Unconfirmed"},
-		"new_status": "Confirmed",
-		"user_id": userId,
-		"id": allocationId,
+		"new_status": allocation.Status,
+		"user_id": allocation.UserId,
+		"id": allocation.Id,
 	})
 
 	if err := q.ExecRelease(); err != nil {
-		output.WriteErrorMessage(w, http.StatusInternalServerError, "")
+		log.Println("Unable to update allocation: ", err)
+		output.WriteErrorMessage(w, http.StatusInternalServerError, "Unable to update Allocation")
 		return
 	}
 
-	output.WriteJson(w, allocationId)
+	output.WriteJson(w, allocation)
 }
 
 func (ctx *RequestContext) ExpireAllocation(w http.ResponseWriter, r *http.Request) {
@@ -306,16 +356,51 @@ func (ctx *RequestContext) ExpireAllocation(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	query, names := qb.Update("allocations").
+	storeId, err := ctx.getStoreIdFromRequest(r)
+	if err != nil {
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Invalid Store Identifier")
+		return
+	}
+
+	dbShard := SelectShard(storeId, ctx.Database)
+
+	query, names := qb.Select("allocations").
+		Where(qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
+	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
+		UserId: userId,
+		Id: allocationId,
+	})
+
+	var allocation model.AllocationDetails
+	if err := gocqlx.Get(&allocation, q.Query); err != nil {
+		switch err {
+		case gocql.ErrNotFound:
+			output.WriteErrorMessage(w, http.StatusNotFound, "Store not found")
+		default:
+			log.Println(err)
+			output.WriteErrorMessage(w, http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	if allocation.Status != "Unconfirmed" {
+		log.Println("Allocation in unexpected state")
+		output.WriteErrorMessage(w, http.StatusBadRequest, "Allocation not in Unconfirmed state")
+		return
+	}
+
+	allocation.Status = "Expired"
+
+	query, names = qb.Update("allocations").
 		SetNamed("status", "new_status").
 		Where(qb.Eq("user_id"), qb.Eq("id")).
 		If(qb.InNamed("status", "old_status")).
 		ToCql()
-	q := gocqlx.Query(ctx.Cassandra.Query(query), names).BindMap(qb.M{
+	q = gocqlx.Query(dbShard.Query(query), names).BindMap(qb.M{
 		"old_status": []string {"Unconfirmed"},
-		"new_status": "Expired",
-		"user_id": userId,
-		"id": allocationId,
+		"new_status": allocation.Status,
+		"user_id": allocation.UserId,
+		"id": allocation.Id,
 	})
 
 	if err := q.ExecRelease(); err != nil {
@@ -323,7 +408,7 @@ func (ctx *RequestContext) ExpireAllocation(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	output.WriteJson(w, allocationId)
+	output.WriteJson(w, allocation)
 }
 
 // -- Helper Functions --
