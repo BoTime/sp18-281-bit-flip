@@ -33,8 +33,8 @@ No body needed
 No body needed
 
 ##### Response Body
-"Authenticated"  -Success for valid Token<br>
-"Bad Authentication" -Failure for invalid Token
+"Authenticated"  -StatusOK- Success for valid Token<br>
+"Bad Authentication" -StatusUnauthorized - Failure for invalid Token
 
 ### Create Order
 
@@ -75,10 +75,12 @@ Create a Starbcuks drink order.
 ```
 ##### Response Body
 "created", StatusCreated on sucsess<br>
-"Bad Dependency-Inventory"/"Bad Dependency-Payment" for internal server error for dependencies<br>
-"Bad Card Details",StatusBadRequest if Payment declines<br>
-"Failed to create order" for internal server error while order creation<br>
-"Inventory Lacking", StatusBadRequest incase Inventory doesnt confirm the order request<br>
+"Something went bad with payload", internal server error for bad payload<br>
+"Bad Dependency-Inventory"/"Bad Dependency-Payment", internal server error for dependencies<br>
+"Bad Card Details", internal server error if Payment declines<br>
+"Error creating session", internal server error while unsuccessful session creation<br>
+"Failed to create order", internal server error while order creation<br>
+"Inventory Lacking", internal server error incase Inventory doesnt confirm the order request<br>
 
 
 | Property Name | Type | Description |
@@ -127,8 +129,9 @@ Do not supply a request body for this method.
 ]"
 ```
 err/msg data in case of internalserver error.<br>
-"Unable to Authenticate" for invalid token request.<br>
-"Bad Authentication" for  unauthorized request.<br>
+"Unable to Authenticate", StatusUnauthorized for invalid token request.<br>
+"Bad Authentication", StatusUnauthorized for  unauthorized request.<br>
+"Error creating session", internal server error while unsuccessful session creation<br>
 
 ### Update Order
 #### PATCH /orders/v1/order
@@ -138,6 +141,12 @@ Not Supported, internally handled by Go routine
 ### Delete Order
 #### DELETE /orders/v1/order
 
+##### Request Headers
+
+| Header | Description |
+|--------|-------------|
+| Authorization | User Credential for Authorization Verification |
+
 ##### Request Body
 
 { "pid": "e5440db4-468d-11e8-84b1-204747ddadd5"}
@@ -146,10 +155,11 @@ As the userId will be decoded from Auth token.
 
 ##### Response<br>
 "Deleted", StatusAccepted on Success<br>
-"Something went bad with payload", StatusBadRequest for bad pid data<br>
+"Something went bad with payload", internal server error for bad pid data/payload<br>
 err/msg data in case of internalserver error<br>
-"Unable to Authenticate" for invalid token request.<br>
-"Bad Authentication" for  unauthorized request.
+"Unable to Authenticate",StatusUnauthorized for invalid token request.<br>
+"Error creating session", internal server error while unsuccessful session creation<br>
+"Bad Authentication", StatusUnauthorized for  unauthorized request.
 <br>
 #### Resources
 ##### Order Resource
