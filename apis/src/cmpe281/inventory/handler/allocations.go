@@ -182,6 +182,7 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 	}
 
 	allocation := model.AllocationDetails{
+		StoreId: storeId,
 		UserId: userId,
 		Id: allocationId,
 		Status: "Unconfirmed",
@@ -189,7 +190,7 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 		Products: updatedProducts,
 	}
 
-	query, names = qb.Insert("allocations").Columns("user_id", "id", "status", "expires", "products").ToCql()
+	query, names = qb.Insert("allocations").Columns("store_id", "user_id", "id", "status", "expires", "products").ToCql()
 	q = gocqlx.Query(dbShard.Query(query), names).BindStruct(allocation)
 	if err := q.ExecRelease(); err != nil {
 		output.WriteErrorMessage(w, http.StatusInternalServerError, "Unable to write allocation")
@@ -215,8 +216,9 @@ func (ctx *RequestContext) ListAllocations(w http.ResponseWriter, r *http.Reques
 
 	dbShard := SelectShard(storeId, ctx.Database)
 
-	query, names := qb.Select("allocations").Where(qb.Eq("user_id")).ToCql()
+	query, names := qb.Select("allocations").Where(qb.Eq("store_id"), qb.Eq("user_id")).ToCql()
 	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
+		StoreId: storeId,
 		UserId: userId,
 	})
 
@@ -253,8 +255,9 @@ func (ctx *RequestContext) GetAllocation(w http.ResponseWriter, r *http.Request)
 	dbShard := SelectShard(storeId, ctx.Database)
 
 	// Set up Query
-	query, names := qb.Select("allocations").Where(qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
+	query, names := qb.Select("allocations").Where(qb.Eq("store_id"), qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
 	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
+		StoreId: storeId,
 		UserId: userId,
 		Id: allocationId,
 	})
@@ -297,8 +300,9 @@ func (ctx *RequestContext) ConfirmAllocation(w http.ResponseWriter, r *http.Requ
 	dbShard := SelectShard(storeId, ctx.Database)
 
 	query, names := qb.Select("allocations").
-		Where(qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
+		Where(qb.Eq("store_id"), qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
 	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
+		StoreId: storeId,
 		UserId: userId,
 		Id: allocationId,
 	})
@@ -325,12 +329,13 @@ func (ctx *RequestContext) ConfirmAllocation(w http.ResponseWriter, r *http.Requ
 
 	query, names = qb.Update("allocations").
 		SetNamed("status", "new_status").
-			Where(qb.Eq("user_id"), qb.Eq("id")).
+			Where(qb.Eq("store_id"), qb.Eq("user_id"), qb.Eq("id")).
 				If(qb.InNamed("status", "old_status")).
 					ToCql()
 	q = gocqlx.Query(dbShard.Query(query), names).BindMap(qb.M{
 		"old_status": []string {"Unconfirmed"},
 		"new_status": allocation.Status,
+		"store_id": allocation.StoreId,
 		"user_id": allocation.UserId,
 		"id": allocation.Id,
 	})
@@ -366,8 +371,9 @@ func (ctx *RequestContext) ExpireAllocation(w http.ResponseWriter, r *http.Reque
 	dbShard := SelectShard(storeId, ctx.Database)
 
 	query, names := qb.Select("allocations").
-		Where(qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
+		Where(qb.Eq("store_id"), qb.Eq("user_id"), qb.Eq("id")).Limit(1).ToCql()
 	q := gocqlx.Query(dbShard.Query(query), names).BindStruct(model.AllocationDetails{
+		StoreId: storeId,
 		UserId: userId,
 		Id: allocationId,
 	})
@@ -394,12 +400,13 @@ func (ctx *RequestContext) ExpireAllocation(w http.ResponseWriter, r *http.Reque
 
 	query, names = qb.Update("allocations").
 		SetNamed("status", "new_status").
-		Where(qb.Eq("user_id"), qb.Eq("id")).
+		Where(qb.Eq("store_id"), qb.Eq("user_id"), qb.Eq("id")).
 		If(qb.InNamed("status", "old_status")).
 		ToCql()
 	q = gocqlx.Query(dbShard.Query(query), names).BindMap(qb.M{
 		"old_status": []string {"Unconfirmed"},
 		"new_status": allocation.Status,
+		"store_id": allocation.StoreId,
 		"user_id": allocation.UserId,
 		"id": allocation.Id,
 	})
