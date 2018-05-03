@@ -50,7 +50,7 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 				userRes.statusCode = 401;
 				return;
 			}
-		    return "";
+		    return userRes;
 	  	}
 	})
 );
