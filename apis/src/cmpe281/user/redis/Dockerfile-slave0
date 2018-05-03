@@ -1,0 +1,7 @@
+# ref: https://hub.docker.com/_/redis/
+FROM redis
+COPY redis-slave.conf /usr/local/etc/redis/redis.conf
+CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+
+EXPOSE 6390
+EXPOSE 16390

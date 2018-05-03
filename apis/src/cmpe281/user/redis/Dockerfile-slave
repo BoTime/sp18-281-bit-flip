@@ -14,8 +14,8 @@ RUN chown redis:redis /usr/local/etc/redis/redis.conf
 CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
 # CMD [ "redis-sentinel", "/usr/local/etc/redis/sentinel.conf" ]
 
-EXPOSE 6380
-EXPOSE 16380
+EXPOSE 6390
+EXPOSE 16390
 
 ADD entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
