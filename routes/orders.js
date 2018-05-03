@@ -42,6 +42,7 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 		   	console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 202) {
 				// Order updated sucessfully
+				console.log('Delete sucess in route');
 				userRes.statusCode = 200;
 				return;
 
@@ -50,7 +51,7 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 				userRes.statusCode = 401;
 				return;
 			}
-		    return userRes;
+		    return data;
 	  	}
 	})
 );
