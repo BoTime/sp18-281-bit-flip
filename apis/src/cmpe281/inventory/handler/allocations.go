@@ -173,6 +173,7 @@ func (ctx *RequestContext) CreateAllocation(w http.ResponseWriter, r *http.Reque
 	for _, product := range allocationRequest.Products {
 		inv := inventoryLookup[product.Id]
 		updatedProducts = append(updatedProducts, &model.InventoryDetails{
+			StoreId: storeId,
 			Id: product.Id,
 			Name: inv.Name,
 			Quantity: product.Quantity,
