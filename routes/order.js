@@ -14,7 +14,7 @@ router.post('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
 			console.log("Back",proxyRes);
-		    data = JSON.parse(proxyResData.toString('utf8'));
+		    // data = JSON.parse(proxyResData.toString('utf8'));
 		   	console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 201) {
 				console.log("Sucess");
@@ -22,16 +22,17 @@ router.post('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 				//userRes.statusCode = 201;
 				userRes.redirect('created');
 
-			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
+			} else if (proxyRes.statusCode >= 400 && proxyRes.statusCode < 500) {
 				// Order placing failed, redirect to signin page
 				console.log("400");
 				userRes.statusCode = 401;
 				userRes.redirect('signin');
-			}else {
+
+			} else {
 				// Order placing failed, redirect to oops page
-				console.log("500");
-				userRes.statusCode = 500;
-				userRes.redirect('oops');
+				console.log(">= 5xx");
+				userRes.statusCode = 302;
+				userRes.setHeader('Location', '/oops');
 			}
 		    return userRes;
 	  	}

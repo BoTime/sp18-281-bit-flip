@@ -38,18 +38,26 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-		    data = JSON.parse(proxyResData);
+		    // data = JSON.parse(proxyResData);
 		   	console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 202) {
 				// Order updated sucessfully
 				console.log('Delete sucess in route');
 				userRes.statusCode = 200;
-			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
+
+            } else if (proxyRes.statusCode >= 400 && proxyRes.statusCode < 500) {
 				// Order placing failed, redirect to signin page
+				console.log("400");
 				userRes.statusCode = 401;
-				return;
+				userRes.redirect('signin');
+
+			} else {
+				// Order placing failed, redirect to oops page
+				console.log(">= 5xx");
+				userRes.statusCode = 302;
+				userRes.setHeader('Location', '/oops');
 			}
-		    return data;
+		    return proxyResData;
 	  	}
 	})
 );
@@ -62,7 +70,7 @@ router.get('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
 			console.log("BEFORE");
-		    data = JSON.parse(proxyResData);
+		    // data = JSON.parse(proxyResData);
 			//data = JSONStringifyTweeked(proxyResData);
 			console.log('status code====', proxyRes.statusCode);
 
@@ -71,19 +79,20 @@ router.get('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 				userRes.statusCode = 200;
 				console.log("Sucess");
 				userRes.setHeader('Location', '/history');
-			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
+
+            } else if (proxyRes.statusCode >= 400 && proxyRes.statusCode < 500) {
 				// Order placing failed, redirect to signin page
+				console.log("400");
 				userRes.statusCode = 401;
-				userRes.setHeader('Location', '/signin');
-				return;
-			}else{
+				userRes.redirect('signin');
+
+			} else {
 				// Order placing failed, redirect to oops page
-				console.log("500");
-				userRes.statusCode = 500;
+				console.log(">= 5xx");
+				userRes.statusCode = 302;
 				userRes.setHeader('Location', '/oops');
-				return;
 			}
-		    return  data;
+		    return  proxyResData;
 	  	}
 	})
 );
