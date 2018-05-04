@@ -38,19 +38,18 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-		    data = JSON.parse(proxyResData.toString('utf8'));
+		    data = JSON.parse(proxyResData);
 		   	console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 202) {
 				// Order updated sucessfully
+				console.log('Delete sucess in route');
 				userRes.statusCode = 200;
-				return;
-
 			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400 || proxyRes.statusCode === 404) {
 				// Order placing failed, redirect to signin page
 				userRes.statusCode = 401;
 				return;
 			}
-		    return "";
+		    return data;
 	  	}
 	})
 );

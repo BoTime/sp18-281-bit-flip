@@ -9,11 +9,16 @@
 						type: "DELETE",
 			url: path,
 			success: function(data){
-				alert("Order Deleted");
-				window.location.href=window.location.href;
+				console.log("AJAX DELETE SUCCESS",xhr.status);
 			},
-			error: function(){
-				alert("Something went wrong, try again");
+			complete: function(xhr, textStatus) {
+				console.log("AJAX DELETE",xhr.status);
+				if (xhr.status === 200 || xhr.status === 201 || xhr.status === 202 ){
+					alert("Order Deleted");
+					window.location.href=window.location.href;
+				}else{
+					alert("Something went wrong!, Try again later");
+				}
 			}
 		});
 	};
