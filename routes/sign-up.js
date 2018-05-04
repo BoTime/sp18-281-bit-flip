@@ -21,19 +21,23 @@ router.post('/', RequestModifier, JwtToken.attachTokenToHeader, proxy(KONG_API_G
 			return newUrl;
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-			data = JSON.parse(proxyResData.toString('utf8'));
 			console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200) {
 				// Login success, redirect to home page
 				userRes.statusCode = 302;
-				userRes.setHeader('Location', '/home');
+				userRes.setHeader('Location', '/index');
 
-			} else if (proxyRes.statusCode === 401 || proxyRes.statusCode === 400) {
+			} else if (proxyRes.statusCode >= 400 && proxyRes.statusCode < 500) {
 				// Login failed, redirect to signin page
 				userRes.statusCode = 302;
 				userRes.setHeader('Location', '/signin');
+
+			} else {
+				// Redirect to "oops" page
+				userRes.statusCode = 302;
+				userRes.setHeader('Location', '/oops');
 			}
-			return JSON.stringify(data);
+			return proxyResData;
 		}
 	})
 );
