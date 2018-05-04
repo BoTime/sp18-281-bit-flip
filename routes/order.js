@@ -34,7 +34,7 @@ router.post('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 				userRes.statusCode = 302;
 				userRes.setHeader('Location', '/oops');
 			}
-		    return userRes;
+		    return proxyResData;
 	  	}
 	})
 );
