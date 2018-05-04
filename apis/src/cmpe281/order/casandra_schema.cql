@@ -1,4 +1,4 @@
-CREATE KEYSPACE starbucks WITH replication = {'class':'SimpleStrategy','replication_factor':1};
+CREATE KEYSPACE starbucks WITH replication = {'class':'NetworkTopologyStrategy', 'dc1': '5'};
 
 #Store product selected
 create type starbucks.items(
@@ -20,7 +20,8 @@ create type starbucks.billing_details(
 create type starbucks.card_details (
 	number text,
     exp_month text,
-    exp_year text
+    exp_year text,
+	cvv text
 );
 #Store payements details
 create type starbucks.payments(
@@ -47,4 +48,4 @@ AND read_repair_chance = 0.0
 AND speculative_retry = '99PERCENTILE';
 
 #Order table indexing
-CREATE INDEX order_user_idx ON starbucks.orders (user_id);
+CREATE INDEX order_user_idx ON starbucks.orders (pay_id);

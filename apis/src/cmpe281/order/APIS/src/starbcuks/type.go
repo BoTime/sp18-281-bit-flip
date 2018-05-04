@@ -34,6 +34,7 @@ type Card struct {
 	Number string `json:"number" cql:"number"`
     Exp_month string `json:"exp_month" cql:"exp_month"`
     Exp_yr string `json:"exp_year" cql:"exp_year"`
+	Cvv string `json:"cvv" cql:"cvv"`
 }
 
 // Store complete order detail for Gets
@@ -54,4 +55,18 @@ type GetOrder struct {
   Store  string    `json:"store" cql:"store"`
   Product []OrderDetails `json:"product" cql:"product"`
   Payment Payments `json:"-" cql:"payment"`
+}
+
+type GetPayments struct {
+	Amount   string    `json:"amount"`
+	Bill	Billing    `json:"billing_details"`
+	CardDetails Card `json:"card_details"`
+	PayID gocql.UUID `json:"payment_id"`
+	Status string `json:"status"`
+}
+type GetInventory struct { 
+  InvId  gocql.UUID  `json:"id"`
+  Status string `json:"status"`
+  Expires  int    `json:"expires"`
+  Product []OrderDetails `json:"products"`
 }
