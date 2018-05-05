@@ -9,7 +9,7 @@
 						type: "DELETE",
 			url: path,
 			success: function(data){
-				console.log("AJAX DELETE SUCCESS",xhr.status);
+				console.log("AJAX DELETE SUCCESS");
 			},
 			complete: function(xhr, textStatus) {
 				console.log("AJAX DELETE",xhr.status);
