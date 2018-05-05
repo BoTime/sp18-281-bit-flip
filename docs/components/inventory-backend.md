@@ -56,7 +56,7 @@ Do not supply a request body for this method.
     {
       "id": "ef2d6b8a-58f0-44b0-970c-8ae77c77eee4",
       "item": "Caramel Macchiato",
-      "qty": 500,
+      "qty": "500",
       "size": "large"
     },
   ]
@@ -88,7 +88,7 @@ Creates an allocation of store inventory for fulfillment of a drink order. Alloc
     {
       "id": "ef2d6b8a-58f0-44b0-970c-8ae77c77eee4",
       "item": "Caramel Macchiato",
-      "qty": 2,
+      "qty": "2",
       "size": "large"
     }
   ]
@@ -100,13 +100,14 @@ Creates an allocation of store inventory for fulfillment of a drink order. Alloc
 ```json
 {
   "id": "b5312315-d3fd-43bf-9bc6-e6de1af1724a",
+  "store_id": "f0b043e7-3388-4a56-b6b0-1adbf471d51f",
   "status": "Unconfirmed",
-  "expires": 60,
+  "expires": "2018-05-04T02:48:52.958Z",
   "products": [
     {
       "id": "ef2d6b8a-58f0-44b0-970c-8ae77c77eee4",
       "item": "Caramel Macchiato",
-      "qty": 2,
+      "qty": "2",
       "size": "large"
     }
   ]
@@ -140,13 +141,14 @@ Do not send a request body for this method.
 ```json
 {
   "id": "b5312315-d3fd-43bf-9bc6-e6de1af1724a",
+  "store_id": "f0b043e7-3388-4a56-b6b0-1adbf471d51f",
   "status": "Confirmed",
-  "expires": null,
+  "expires": "2018-05-04T02:48:52.958Z",
   "products": [
     {
       "id": "ef2d6b8a-58f0-44b0-970c-8ae77c77eee4",
       "item": "Caramel Macchiato",
-      "quantity": 2,
+      "qty": "2",
       "size": "large"
     }
   ]
@@ -177,4 +179,19 @@ Do not send a request body for this method.
 
 ##### Response Body
 
-A response body is not provided for this method.
+```json
+{
+  "id": "b5312315-d3fd-43bf-9bc6-e6de1af1724a",
+  "store_id": "f0b043e7-3388-4a56-b6b0-1adbf471d51f",
+  "status": "Expired",
+  "expires": "2018-05-04T02:48:52.958Z",
+  "products": [
+    {
+      "id": "ef2d6b8a-58f0-44b0-970c-8ae77c77eee4",
+      "item": "Caramel Macchiato",
+      "qty": "2",
+      "size": "large"
+    }
+  ]
+}
+```
