@@ -380,7 +380,7 @@ func starbcuksOrderStatusHandler(formatter *render.Render) http.HandlerFunc {
                                                 return
                                         }
                                         data, _:= json.Marshal(order)
-                                        formatter.JSON(w, http.StatusOK, string(data))
+                                        formatter.JSON(w, http.StatusOK, data)
                                 } else {
                                         formatter.JSON(w, http.StatusUnauthorized, "Unable to Authenticate")
                                 }
