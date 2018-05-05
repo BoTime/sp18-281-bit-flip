@@ -86,8 +86,8 @@ Create a Starbcuks drink order.
 | Property Name | Type | Description |
 |---------------|------|-------------|
 | `store` | ("San Jose", "Mountain View") as string | The store identifier for location of purchase |
-| `product` | [Order](#Order Resource) | List of drink items, quantity and size for the order. |
-| `payment` | [Payment](#Payment Resource) | Payment details for the order. |
+| `product` | [Order](https://github.com/nguyensjsu/team281-bit-flip/edit/master/docs/components/order-backend.md#L164) | List of drink items, quantity and size for the order. |
+| `payment` | [Payment](https://github.com/nguyensjsu/team281-bit-flip/blob/master/docs/components/payment-backend.md) | Payment details for the order. |
 
 ### List Orders
 
@@ -188,103 +188,3 @@ err/msg data in case of internalserver error<br>
 } 
 
 ```
-
-| Property Name | Type | Description |
-|---------------|------|-------------|
-| `store` | string | Identifier of the store location of purchase. |
-| `product[].item` | string | Name of the drink being ordered. |
-| `product[].size` | string | Size of drink. Choose from: `short`, `tall`, `grande`, `venti`. |
-| `product[].qty` | string | Amount ordered. |
-| `payment.card.number` | string | Credit or Debit Card Number 11digit. |
-| `payment.card.ccv` | string | Credit or Debit Security Code 3 digit. |
-| `payment.card.exp_month` | string | Credit or Debit expiry month 1-12. |
-| `payment.card.exp_year` | string | Credit or Debit expiry year max 20+ yr. |
-| `payment.billing.firstname` | string | Customer Billing First Name. |
-| `payment.billing.lastname` | string | Customer Billing Last Name. |
-| `payment.billing.line1` | string | Customer Billing Line 1. |
-| `payment.billing.line2` | string | Customer Billing Line 2. |
-| `payment.billing.city` | string | Customer Billing City. |
-| `payment.billing.state` | string | Customer Billing State. |
-| `payment.billing.zipcode` | string | Customer Billing Zip Code. |
-| `payment.amount` | string | Customer Billing Amount. |
-
-##### Payment Resource
-##### Request Body
-
-```json
-{
-  "amount": "10",
-  "billing_details": {
-    "first_name": "John",
-    "last_name": "Doe",
-    "line1": "One Washington Square",
-    "line2": "",
-    "city": "San Jose",
-    "state": "CA",
-    "zip_code": "95192"
-  },
-  "card_details": {
-    "number": "4111111111111111",
-    "cvv": "111",
-    "exp_month": "04",
-    "exp_year": "2018"
-  }
-}
-```
-
-| Property Name | Type | Description |
-|---------------|------|-------------|
-| `amount` | float | Payment Amount. |
-| `billing_details.first_name` | string | Customer Billing First Name. |
-| `billing_details.last_name` | string | Customer Billing Last Name. |
-| `billing_details.line1` | string | Customer Billing Address Line 1. |
-| `billing_details.line2` | string | Customer Billing Address Line 2. |
-| `billing_details.city` | string | Customer Billing City. |
-| `billing_details.state` | string | Customer Billing State. |
-| `billing_details.zip_code` | string | Customer Billing Zip Code. |
-| `card_details.number` | string | Customer Payment Card Number. |
-| `card_details.cvv` | string | Customer Payment Card CVV -- Not Stored. |
-| `card_details.exp_month` | string | Customer Payment Card Expiration Month. |
-| `card_details.exp_year` | string | Customer Payment Card Expiration Year. |
-
-##### Response Body
-
-```json
-{
-  "amount": 10.00,
-  "billing_details": {
-    "first_name": "John",
-    "last_name": "Doe",
-    "line1": "One Washington Square",
-    "line2": "",
-    "city": "San Jose",
-    "state": "CA",
-    "zip_code": "95192"
-  },
-  "card_details": {
-    "number": "4111111111111111",
-    "cvv": "111",
-    "exp_month": "04",
-    "exp_year": "2018"
-  },
-  "payment_id": "52a1972c-4451-11e8-842f-0ed5f89f718b",
-  "status": "Approved",
-}
-```
-
-| Property Name | Type | Description |
-|---------------|------|-------------|
-| `amount` | string | Payment Amount. |
-| `billing_details.first_name` | string | Customer Billing First Name. |
-| `billing_details.last_name` | string | Customer Billing Last Name. |
-| `billing_details.line1` | string | Customer Billing Address Line 1. |
-| `billing_details.line2` | string | Customer Billing Address Line 2. |
-| `billing_details.city` | string | Customer Billing City. |
-| `billing_details.state` | string | Customer Billing State. |
-| `billing_details.zip_code` | string | Customer Billing Zip Code. |
-| `card_details.number` | string | Customer Payment Card Number. |
-| `card_details.cvv` | string | Customer Payment Card CVV -- Not Stored. |
-| `card_details.exp_month` | string | Customer Payment Card Expiration Month. |
-| `card_details.exp_year` | string | Customer Payment Card Expiration Year. |
-| `payment_id` | string | Payment Identifier. |
-| `status` | string | Payment Status. |
