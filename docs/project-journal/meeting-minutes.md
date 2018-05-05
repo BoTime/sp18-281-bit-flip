@@ -149,3 +149,26 @@ Have Auto scaling done for individual modules and meet again for proper testing 
 1. Fix the authentication issue caused by local storage. (Bo)
 2. Sharding inventory database based on store id. (Brian)
 3. Investigate error message after deleting order. (Vimmi)
+
+---
+
+## Meeting - 07
+
+| LOCATION | Zoom + Whatsapp Group |
+|:----|:----|
+| **Date** | 2018/05/04 |
+| **Facilitator** | N/A |
+| **Timer** | N/A |
+| **Note Taker** | Vimmi |
+| **Attendees** | Brian Bamsch<br>Bo Liu<br>Vimmi Swami<br> |
+
+### Agenda Topics
+1. Integration testing.
+2. Resolved some frontend related issues.
+3. Discuss and prepare report for assignment submission.
+
+### Action Items:
+1. Fix the delete javascript related issue. (Vimmi)
+2. Fix the http client related "many open file descriptors issue". (Vimmi)
+3. Pass possible integration testing cases.
+4. Submmit project report. (ALL)
