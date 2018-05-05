@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ejs = require('ejs');
 var proxy = require('express-http-proxy');
-const JwtUtils = require('../utils/JwtToken');
+const JwtUtils = require('../utils/JwtUtils');
 const goAPI =  process.env.KONG_URL;
 /**
  * Fxn that returns a JSON stringified version of an object.

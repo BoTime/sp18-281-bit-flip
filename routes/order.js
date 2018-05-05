@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ejs = require('ejs');
 var proxy = require('express-http-proxy');
-const JwtUtils = require('../utils/JwtToken');
+const JwtUtils = require('../utils/JwtUtils');
 
 const goAPI =  process.env.KONG_URL;
 // Return order page
@@ -13,9 +13,9 @@ router.post('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 			return require('url').parse(req.url).path + 'orders/v1/order';
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-			console.log("Back",proxyRes);
+			// console.log("Back",proxyRes);
 		    // data = JSON.parse(proxyResData.toString('utf8'));
-		   	console.log('status code====', proxyRes.statusCode);
+		   	// console.log('status code====', proxyRes.statusCode);
 			if (proxyRes.statusCode === 200 || proxyRes.statusCode === 201) {
 				console.log("Sucess");
 				// Order updated sucessfully
@@ -41,7 +41,7 @@ router.post('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 
 // Return order page
 router.get('/', JwtUtils.attachTokenToHeader, (req, res) => {
-	console.log("order get",req);
+	// console.log("order get",req);
 	res.render('order');
 });
 

@@ -21,3 +21,13 @@ $('#signup_form').submit(function(e) {
     $(this).append(input);
     return true;
 });
+
+function deleteCookies () {
+    console.log('cookie cleared');
+    document.cookie = 'jwtToken=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    document.cookie = 'name=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+function onClickSignout () {
+    deleteCookies();
+}

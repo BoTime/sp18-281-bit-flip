@@ -1,5 +1,8 @@
+const CookieUtils = require('./CookieUtils');
+
 const attachTokenToHeader = (req, res, next) => {
-    let jwtToken = readTokenFromBrowser();
+    let jwtToken = readTokenFromBrowser(req, 'jwtToken');
+    console.log('jwt token from cookie====', jwtToken)
     req.headers['Authorization'] = jwtToken;
     next()
 };
@@ -9,8 +12,13 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   localStorage = new LocalStorage('./token');
 }
 
-const readTokenFromBrowser = () => {
-    let jwtToken = localStorage.getItem('jwtToken');
+const readTokenFromBrowser = (req, cookieName) => {
+    // // Get jwt token from local storage
+    // let jwtToken = localStorage.getItem('jwtToken');
+    // return jwtToken;
+
+    // Get jwt token from cookies
+    let jwtToken = CookieUtils.read(req, cookieName);
     return jwtToken;
 };
 

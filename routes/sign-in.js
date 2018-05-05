@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const proxy = require('express-http-proxy');
 const RequestModifier = require('../utils/RequestModifier');
-const JwtUtils = require('../utils/JwtToken');
 const LocalStorageUtils = require('../utils/LocalStorageUtils');
-const Cookies = require( "cookies" );
+const CookieUtils = require('../utils/CookieUtils');
 
 const KONG_API_GATEWAY_URL = process.env.KONG_URL;
 
@@ -20,7 +19,7 @@ router.post('/', RequestModifier, proxy(KONG_API_GATEWAY_URL,{
 		},
 		proxyReqPathResolver: function(req) {
 			// Modify urls before redirecting requests
-			console.log('req body ====', req.body);
+			console.log('post signin req body ====', req.body);
 			let newUrl = '';
 			if (KONG_API_GATEWAY_URL.indexOf('localhost') !== -1) {
 				// request through local server
@@ -34,37 +33,21 @@ router.post('/', RequestModifier, proxy(KONG_API_GATEWAY_URL,{
 			return newUrl;
 		},
 		userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-			console.log('========= proxy response =========')
-			console.log(proxyResData.toString('utf8'))
-		    // data = JSON.parse(proxyResData.toString('utf8'));
-		   	console.log('status code====', proxyRes.statusCode);
-			// If statusCode == 502 or 503
-
+			// console.log('&&&&&& 1', proxyRes);
+			// console.log('&&&&&& 2', JSON.parse(proxyResData));
+			// console.log('&&&&&& 3', userRes);
+			// redirect user based on status code
 			if (proxyRes.statusCode === 200) {
 				// Login success, redirect to home page
 				userRes.statusCode = 302;
 				userRes.setHeader('Location', '/index');
 
+				let jwtTokenString = userRes.getHeaders()['authorization'];
+				let name = JSON.parse(proxyResData)['name'];
+				let durationInMils = 1000 * 600;
 
-				// Read jwt token from response header
-				let jwtToken = userRes.getHeaders()['authorization'];
-				console.log("jwt from response header=====", jwtToken);
-
-				let cookies = new Cookies(userReq, userRes);
-				console.log('====', Date.now());
-				cookies.set('jwtToken', 'jwtToken', {
-					expires: new Date(Date.now() + 1000 * 10) // one day
-				});
-				cookies.set('name', userRes, {
-					expires: new Date(Date.now() + 1000 * 10) // one day
-				});
-
-				// Write jwt token to local storage
-				JwtUtils.writeTokenToBrowser(jwtToken);
-				console.log('jwt from local storage====', JwtUtils.readTokenFromBrowser());
-
-				LocalStorageUtils.write('name', userRes);
-				console.log('read from local storage====', LocalStorageUtils.read('name'));
+				CookieUtils.write(userReq, userRes, 'jwtToken', jwtTokenString, durationInMils);
+				CookieUtils.write(userReq, userRes, 'name', name, durationInMils);
 
 			} else if (proxyRes.statusCode >= 400 && proxyRes.statusCode < 500) {
 				// Login failed, redirect to signin page
