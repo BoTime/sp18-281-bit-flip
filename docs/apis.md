@@ -23,6 +23,6 @@
 ### Order Management
 | URL        | Method | Description | Response |
 |:-----------|:------ | :---------- | :----- |
-| /order     | POST   | Place an order | {} |
-| /order/:id | GET   | Get order status | {} |
-| /order     | GET   | Get orders for a user | {} |
+| /order     | POST   | Place an order | "" |
+| /order     | GET   | Get all orders for a user | "" |
+| /order     | DELETE   | Delete order for a user | "" |
