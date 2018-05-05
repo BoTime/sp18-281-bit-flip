@@ -134,7 +134,7 @@ Have Auto scaling done for individual modules and meet again for proper testing 
 
 | LOCATION | Library + Whatsapp Group |
 |:----|:----|
-| **Date** | 2018/05/202 |
+| **Date** | 2018/05/02 |
 | **Facilitator** | N/A |
 | **Timer** | N/A |
 | **Note Taker** | Bo |
