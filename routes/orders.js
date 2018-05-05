@@ -57,7 +57,8 @@ router.delete('/', JwtUtils.attachTokenToHeader, proxy(goAPI,{
 				userRes.statusCode = 302;
 				userRes.setHeader('Location', '/oops');
 			}
-		    return proxyResData;
+		    data = JSON.parse(proxyResData);
+            return data;
 	  	}
 	})
 );
